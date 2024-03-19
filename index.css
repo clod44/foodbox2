@@ -1,0 +1,13 @@
+.hover-scale:hover {
+    transform: scale(1.02);
+    /* Scales the element 1.02 times on hover */
+}
+
+.fs-7 {
+    font-size: 0.8rem;
+}
+
+* {
+    transition-duration: 0.3s;
+    /* Smooth transition effect */
+}
