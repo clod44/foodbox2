@@ -13,7 +13,7 @@
 
     <div class="input-group input-group-sm mb-3 flex-nowrap align-items-center ">
         <span id="score-label" class="input-group-text">1⭐</span>
-        <input type="range" class="ms-2 form-range" min="1" max="5" id="score">
+        <input type="range" class="ms-2 form-range" min="1" max="5" value="1" id="score">
     </div>
 
     <h5 id="categories-title">Categories</h5>
