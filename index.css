@@ -1,3 +1,7 @@
+html {
+    scroll-behavior: smooth;
+}
+
 .hover-scale:hover {
     transform: scale(1.02);
     /* Scales the element 1.02 times on hover */

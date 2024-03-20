@@ -21,15 +21,24 @@ function SESSION_READ($keys, $default = null)
     $key = array_shift($keys);
 
     if (isset ($_SESSION[$key])) {
-        if (!empty ($keys) && isset ($_SESSION[$keys[0]])) {
-            return SESSION_READ($keys, $default);
-        } else {
-            return isset ($_SESSION[$key]) ? $_SESSION[$key] : $default;
+        $value = $_SESSION[$key];
+
+        if (empty ($keys)) {
+            return $value;
         }
-    } else {
-        return $default;
+
+        if (is_array($value)) {
+            return SESSION_READ($keys, $value);
+        } else {
+            // If the value is not an array but keys are remaining, return the default value
+            return $default;
+        }
     }
+
+    return $default;
 }
+
+
 
 /**
  * Writes a value to the session.

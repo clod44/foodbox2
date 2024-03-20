@@ -1,5 +1,8 @@
 <?php
 
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+
 require_once "./utils/db.php";
 require_once "./utils/helpers.php";
 session_start();
@@ -11,7 +14,7 @@ require "./modules/header.php";
 $pagesDir = "./pages/";
 
 // Get the page from the query string or set default
-$PAGE = isset($_GET['page']) ? $_GET['page'] : 'home';
+$PAGE = isset ($_GET['page']) ? $_GET['page'] : 'home';
 
 // Construct the file path
 $pageFilePath = $pagesDir . $PAGE . ".php";

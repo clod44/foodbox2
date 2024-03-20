@@ -8,6 +8,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $email = $_POST["email"];
     $password = $_POST["password"];
     $repeatPassword = $_POST["password-repeat"]; // Get the repeated password
+    $isRestaurant = isset ($_POST["is-restaurant"]);
 
     // Check if passwords match
     if ($password !== $repeatPassword) {
@@ -16,7 +17,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         exit;
     }
 
-    $sql = "SELECT * FROM users WHERE username = ?";
+    $sql = "SELECT * FROM " . ($isRestaurant ? "restaurants" : "users") . " WHERE username = ?";
     $stmt = mysqli_prepare($conn, $sql);
     mysqli_stmt_bind_param($stmt, "s", $username);
     mysqli_stmt_execute($stmt);
@@ -28,7 +29,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         exit;
     }
 
-    $sql = "INSERT INTO users (name, username, email, password) VALUES (?, ?, ?, ?)";
+    $sql = "INSERT INTO " . ($isRestaurant ? "restaurants" : "users") . " (name, username, email, password) VALUES (?, ?, ?, ?)";
     $stmt = mysqli_prepare($conn, $sql);
     mysqli_stmt_bind_param($stmt, "ssss", $name, $username, $email, $password);
     mysqli_stmt_execute($stmt);
@@ -36,7 +37,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if (mysqli_stmt_affected_rows($stmt) > 0) {
         // Fetch newly registered user data
         $newUserId = mysqli_insert_id($conn);
-        $sql = "SELECT * FROM users WHERE id = ?";
+        $sql = "SELECT * FROM " . ($isRestaurant ? "restaurants" : "users") . " WHERE id = ?";
         $stmt = mysqli_prepare($conn, $sql);
         mysqli_stmt_bind_param($stmt, "i", $newUserId);
         mysqli_stmt_execute($stmt);

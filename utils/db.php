@@ -2,7 +2,7 @@
 $username = "root";
 $password = "";
 $servername = "localhost";
-$dbname = "foodbox";
+$dbname = "foodbox-2";
 
 $conn = mysqli_connect($servername, $username, $password, $dbname);
 mysqli_set_charset($conn, "utf8mb4");

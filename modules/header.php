@@ -20,6 +20,8 @@ $PAGE = isset ($_GET['page']) ? $_GET['page'] : "home"; //(isset($_SESSION['page
         crossorigin="anonymous"></script>
     <!--ajax jquey-->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <!--modal generator -->
+    <script src="./utils/modalGenerator.js"></script>
     <link rel="stylesheet" href="index.css">
 
     <title>Foodbox</title>
@@ -27,7 +29,7 @@ $PAGE = isset ($_GET['page']) ? $_GET['page'] : "home"; //(isset($_SESSION['page
 
 <body>
 
-    <nav class="bg-light shadow navbar navbar-expand-md p-0 px-4  border-top border-start border-end ">
+    <nav class="bg-light shadow navbar navbar-expand-md p-0 px-4  border-top border-start border-end">
         <div class="container-fluid">
             <a class="navbar-brand d-flex justify-content-center align-items-center hover-scale" href="./">
                 <span class="p-0 m-0" style="font-size:3rem;">📦</span>
@@ -44,6 +46,17 @@ $PAGE = isset ($_GET['page']) ? $_GET['page'] : "home"; //(isset($_SESSION['page
             </button>
             <div class="collapse navbar-collapse" id="navbarSupportedContent">
                 <ul class="navbar-nav ms-auto">
+                    <li>
+                        <div class="input-group flex-nowrap align-items-center h-100">
+                            <select class="form-select form-select-sm text-center" id="inputGroupSelect01">
+                                <?php for ($i = 0; $i < 3; $i++) { ?>
+                                    <option <?= ($i == 0 ? "selected" : "") ?> value="<?= $i ?>">📌 1234 Elm Street,
+                                        Springfield, NY 12345, United States</option>
+                                <?php } ?>
+                            </select>
+                        </div>
+
+                    </li>
                     <li class="nav-item hover-scale">
                         <a class="nav-link <?php echo ($PAGE == "home" ? "active fw-bold" : ""); ?>" href="./">Home</a>
                     </li>
@@ -51,7 +64,7 @@ $PAGE = isset ($_GET['page']) ? $_GET['page'] : "home"; //(isset($_SESSION['page
                         <a class="nav-link <?php echo ($PAGE == "profile" ? "active fw-bold" : ""); ?>"
                             href="?page=profile">
                             <?php
-                            echo isset ($_SESSION['user']) ? $_SESSION['user']['Name'] : "Profile";
+                            echo isset ($_SESSION['user']) ? $_SESSION['user']['name'] : "Profile";
                             ?>
                         </a>
                     </li>
