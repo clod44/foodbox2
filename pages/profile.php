@@ -51,13 +51,10 @@ if (SESSION_READ("user") == null) {
                             <div class="row gap-2 mb-3">
                                 <label class="small mb-1">Address</label>
                                 <select class="mx-3 row form-select form-select-sm text-center" id="select-province">
-                                    <option value="-1">Select Province</option>
                                 </select>
                                 <select class="mx-3 row form-select form-select-sm text-center" id="select-district">
-                                    <option value="-1">Select District</option>
                                 </select>
                                 <select class="mx-3 row form-select form-select-sm text-center" id="select-street">
-                                    <option value="-1">Select Street</option>
                                 </select>
                             </div>
                             <div class="row gap-3 mb-3">
@@ -84,10 +81,10 @@ if (SESSION_READ("user") == null) {
                     url: './api/user/logout.php',
                     method: 'POST',
                     success: function (response) {
-                        //response = JSON.parse(response);
+                        response = JSON.parse(response);
                         console.log('Logout successful');
                         console.log(response);
-                        //window.location.href = '?page=home';
+                        window.location.href = '?page=home';
                     },
                     error: function (xhr, status, error) {
                         console.error('Logout failed:', error);

@@ -24,7 +24,7 @@ $PAGE = isset ($_GET['page']) ? $_GET['page'] : "home"; //(isset($_SESSION['page
     <script src="./utils/modalGenerator.js"></script>
     <link rel="stylesheet" href="index.css">
 
-    <title>Foodbox</title>
+    <title>📦Foodbox 2</title>
 </head>
 
 <body>
@@ -46,7 +46,7 @@ $PAGE = isset ($_GET['page']) ? $_GET['page'] : "home"; //(isset($_SESSION['page
             </button>
             <div class="collapse navbar-collapse" id="navbarSupportedContent">
                 <ul class="navbar-nav ms-auto">
-                    <li>
+                    <li class="me-2">
                         <div class="input-group flex-nowrap align-items-center h-100">
                             <select class="form-select form-select-sm text-center" id="inputGroupSelect01">
                                 <?php for ($i = 0; $i < 3; $i++) { ?>
@@ -57,16 +57,29 @@ $PAGE = isset ($_GET['page']) ? $_GET['page'] : "home"; //(isset($_SESSION['page
                         </div>
 
                     </li>
-                    <li class="nav-item hover-scale">
+                    <li class="nav-item hover-scale align-items-center justify-content-center d-flex">
                         <a class="nav-link <?php echo ($PAGE == "home" ? "active fw-bold" : ""); ?>" href="./">Home</a>
                     </li>
-                    <li class="nav-item hover-scale">
-                        <a class="nav-link <?php echo ($PAGE == "profile" ? "active fw-bold" : ""); ?>"
-                            href="?page=profile">
-                            <?php
-                            echo isset ($_SESSION['user']) ? $_SESSION['user']['name'] : "Profile";
+                    <li class="nav-item hover-scale text-center align-items-center">
+                        <?php
+                        if (isset ($_SESSION['user'])) {
                             ?>
-                        </a>
+                            <a href="?page=profile"
+                                class="m-0 nav-link d-flex flex-nowrap w-100 h-100 gap-2 justify-content-center align-items-center">
+                                <p class="m-0 p-0 fs-6 <?= ($PAGE == "profile" ? "active fw-bold" : ""); ?>">
+                                    <?= $_SESSION['user']['username'] ?>
+                                </p>
+                                <img src="./media/sample.jpg" class="rounded-pill shadow" style="height:2em;">
+                            </a>
+                            <?php
+                        } else {
+                            ?>
+                            <a class="nav-link <?= ($PAGE == "profile" ? "active fw-bold" : ""); ?>" href="?page=profile">
+                                Login
+                            </a>
+                            <?php
+                        }
+                        ?>
                     </li>
                 </ul>
             </div>

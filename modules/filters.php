@@ -1,4 +1,4 @@
-<div class="p-3 border border-primary rounded">
+<div class="p-3 border border-primary rounded shadow">
 
     <div class="">
         <h5>Price Range</h5>
@@ -16,21 +16,24 @@
         <input type="range" class="ms-2 form-range" min="1" max="5" id="score">
     </div>
 
-    <h5>Categories</h5>
+    <h5 id="categories-title">Categories</h5>
     <div class="rounded mb-3" style="height:10rem; overflow-x:hidden; overflow-y:auto">
         <?php
-        for ($i = 0; $i < 20; $i++) {
-            ?>
+        $sql = "SELECT * FROM categories";
+        $result = mysqli_query($conn, $sql);
+        $categories = mysqli_fetch_all($result, MYSQLI_ASSOC);
+        ?>
+        <?php foreach ($categories as $category): ?>
             <div class="form-check">
-                <input class="form-check-input" type="checkbox" value="" id="category1">
-                <label class="form-check-label" for="category1">
-                    🥰 - Category
-                    <?= $i ?>
+                <input class="form-check-input category-checkbox" type="checkbox" value="<?= $category['id'] ?>">
+                <label class="form-check-label">
+                    <?= $category['emoji'] ?> -
+                    <?= $category['name'] ?>
                 </label>
             </div>
-            <?php
-        } ?>
+        <?php endforeach; ?>
     </div>
+
     <div class="form-check form-switch mb-3 flex-nowrap">
         <input class="form-check-input" type="checkbox" value="1" id="favorites">
         <label class="form-check-label" for="favorites">
@@ -61,5 +64,13 @@
         $('#score').on('input', function () {
             $('#score-label').text($(this).val() + '⭐');
         });
+
+
+        // Add event handler for checkbox change
+        $('.category-checkbox').change(function () {
+            var count = $('.category-checkbox:checked').length;
+            $('#categories-title').text('Categories' + (count > 0 ? (' (' + count + '☑️)') : ''));
+        });
+
     });
 </script>

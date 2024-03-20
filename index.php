@@ -9,25 +9,14 @@ session_start();
 
 require "./modules/header.php";
 
-
-// Define the base directory for the pages
 $pagesDir = "./pages/";
-
-// Get the page from the query string or set default
 $PAGE = isset ($_GET['page']) ? $_GET['page'] : 'home';
-
-// Construct the file path
 $pageFilePath = $pagesDir . $PAGE . ".php";
 
-// Check if the page file exists
-if (file_exists($pageFilePath)) {
-    // Include the page file
+if (file_exists($pageFilePath))
     require $pageFilePath;
-} else {
-    // Include the notfound.php page
+else
     require $pagesDir . "notfound.php";
-}
-
 
 require_once "./modules/footer.php";
 ?>

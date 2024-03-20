@@ -17,6 +17,7 @@
                 quo error perferendis facere hic qui aut eaque deserunt, quam nostrum dignissimos atque nesciunt,
             </p>
             <p class="fw-bold">4.2/5⭐(+3000)</p>
+            <button id="openModalBtn" class="btn btn-success btn-sm">test modal</button>
         </div>
     </div>
 
@@ -34,7 +35,6 @@
         } ?>
     </ul>
 
-    <button id="openModalBtn" class="btn btn-success btn-sm">test modal</button>
     <script>
         // Event listener for the button to trigger dynamic modal
         $('#openModalBtn').click(function () {
@@ -72,20 +72,24 @@
                     <h3 class="mb-3">🍔 Menu
                         <?= $i ?>
                     </h3>
-                    <div class="d-flex flex-wrap gap-2">
+                    <div class="row align-items-start justify-content-around">
                         <?php
                         for ($j = 0; $j < 10; $j++) {
                             ?>
-                            <div class="hover-scale m-0 p-3 border border-primary rounded shadow overflow-hidden"
-                                style="height:8rem; width:20rem;cursor:pointer;">
-                                <div class="d-flex align-items-center justify-content-between w-100 h-100 m-0 p-0">
-                                    <div class="d-flex flex-column align-items-start justify-content-between m-0 p-0">
-                                        <p class="m-0 p-0 fw-bold lead">Label</p>
-                                        <p class="text-break m-0 p-0 fs-7 small">Lorem ipsum dolor sit amet
-                                            consectetur adiro ratione rerum, pariatur sint alias aliquid.</p>
-                                        <span class="badge text-bg-warning fw-bold">12.00$</span>
+                            <div class="col-12 col-md-6 p-2">
+
+                                <div class="hover-scale m-0 p-3 border border-primary rounded shadow overflow-hidden"
+                                    style="cursor:pointer;">
+                                    <div class="d-flex align-items-center justify-content-between w-100 h-100 m-0 p-0">
+                                        <div class="d-flex flex-column align-items-start justify-content-between m-0 p-0">
+                                            <p class="m-0 p-0 fw-bold lead">Label</p>
+                                            <p class="text-break m-0 p-0 fs-7 small">Lorem ipsum dolor sit amet
+                                                consectetur adiro ratione rerum, pariatur sint alias aliquid.</p>
+                                            <span class="badge text-bg-warning fw-bold">12.00$</span>
+                                        </div>
+                                        <img src="./media/sample.jpg" class="rounded" style="width:5rem;">
                                     </div>
-                                    <img src="./media/sample.jpg" class="rounded" style="width:5rem;">
+
                                 </div>
                             </div>
 
