@@ -7,12 +7,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $username = $_POST["username"];
     $email = $_POST["email"];
     $password = $_POST["password"];
-    $repeatPassword = $_POST["password-repeat"]; // Get the repeated password
+    $repeatPassword = $_POST["password-repeat"];
     $isRestaurant = isset ($_POST["is-restaurant"]);
 
-    // Check if passwords match
     if ($password !== $repeatPassword) {
-        http_response_code(400); // Bad Request
+        http_response_code(400);
         echo json_encode(["error" => "Passwords do not match"]);
         exit;
     }
@@ -24,7 +23,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $result = mysqli_stmt_get_result($stmt);
 
     if (mysqli_num_rows($result) > 0) {
-        http_response_code(400); // Bad Request
+        http_response_code(400);
         echo json_encode(["error" => "Username already exists"]);
         exit;
     }
@@ -35,7 +34,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     mysqli_stmt_execute($stmt);
 
     if (mysqli_stmt_affected_rows($stmt) > 0) {
-        // Fetch newly registered user data
         $newUserId = mysqli_insert_id($conn);
         $sql = "SELECT * FROM " . ($isRestaurant ? "restaurants" : "users") . " WHERE id = ?";
         $stmt = mysqli_prepare($conn, $sql);
@@ -43,21 +41,17 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         mysqli_stmt_execute($stmt);
         $result = mysqli_stmt_get_result($stmt);
         $newUser = mysqli_fetch_assoc($result);
-
-        SESSION_WRITE('user', $newUser); // Save the newly registered user to session
-
+        $_SESSION['user'] = $newUser;
         echo json_encode(["success" => true]);
         exit;
     } else {
-        // Registration failed
-        SESSION_UNSET_KEY("user");
-        http_response_code(500); // Internal Server Error
+        unset($_SESSION['user']);
+        http_response_code(500);
         echo json_encode(["error" => "Registration failed: " . mysqli_error($conn)]);
         exit;
     }
 } else {
-    // Invalid request method
-    http_response_code(405); // Method Not Allowed
+    http_response_code(405);
     echo json_encode(["error" => "Invalid request method"]);
     exit;
 }

@@ -1,5 +1,5 @@
 <?php
-if (SESSION_READ("user") == null) {
+if (!IS_USER_LOGGED_IN()) {
     require "./modules/login.php";
 } else {
     ?>
@@ -15,7 +15,7 @@ if (SESSION_READ("user") == null) {
                 <div class="card mb-4">
                     <div class="card-header text-primary fw-bold">Account Details</div>
                     <div class="card-body">
-                        <form id="profileEdit">
+                        <form id="profileDetailsForm">
                             <div class="mb-3">
                                 <label class="small mb-1" for="inputUsername">
                                     Username (how your name will appear to other users on the site)
@@ -24,43 +24,37 @@ if (SESSION_READ("user") == null) {
                                     value="<?= $_SESSION['user']['username'] ?? null ?>">
                             </div>
                             <div class="col mb-3">
-                                <label class="small mb-1" for="inputFullName">Full Name
-                                    name</label>
-                                <input class="form-control" id="inputFullName" type="text"
-                                    placeholder="Enter your full name" value="<?= $_SESSION['user']['name'] ?? null ?>">
+                                <label class="small mb-1">Full Name</label>
+                                <input class="form-control" name="name" type="text" placeholder="Enter your full name"
+                                    name="name" value="<?= $_SESSION['user']['name'] ?? null ?>">
                             </div>
 
                             <div class="mb-3">
-                                <label class="small mb-1" for="inputEmailAddress">Email address</label>
-                                <input class="form-control" id="inputEmailAddress" type="email"
-                                    placeholder="Enter your email address"
+                                <label class="small mb-1">Email address</label>
+                                <input readonly class="form-control" type="email" placeholder="Enter your email address"
                                     value="<?= $_SESSION['user']['email'] ?? null ?>">
                             </div>
                             <div class="row gx-3 mb-3">
                                 <div class="col-md-6">
                                     <label class="small mb-1" for="inputPhone">Phone number</label>
-                                    <input class="form-control" id="inputPhone" type="tel"
-                                        placeholder="Enter your phone number" value="555-123-4567">
-                                </div>
-                                <div class="col-md-6">
-                                    <label class="small mb-1" for="inputBirthday">Birthday</label>
-                                    <input class="form-control" id="inputBirthday" type="text" name="birthday"
-                                        placeholder="Enter your birthday" value="06/10/1988">
+                                    <input class="form-control" name="phone" type="tel"
+                                        placeholder="Enter your phone number"
+                                        value="<?= $_SESSION['user']['phone'] ?? null ?>">
                                 </div>
                             </div>
                             <div class="row gap-2 mb-3">
                                 <label class="small mb-1">Address</label>
-                                <select class="mx-3 row form-select form-select-sm text-center" id="select-province">
+                                <select class="mx-3 row form-select form-select-sm text-center" name="province">
                                 </select>
-                                <select class="mx-3 row form-select form-select-sm text-center" id="select-district">
+                                <select class="mx-3 row form-select form-select-sm text-center" name="district">
                                 </select>
-                                <select class="mx-3 row form-select form-select-sm text-center" id="select-street">
+                                <select class="mx-3 row form-select form-select-sm text-center" name="street">
                                 </select>
                             </div>
                             <div class="row gap-3 mb-3">
-                                <button class="col btn btn-primary" type="button" name="operation" value="savechanges">Save
-                                    changes 💾</button>
-                                <button id="logoutBtn" class="col btn btn-outline-dark" type="button"> Log
+                                <button name="save-changes" class="col btn btn-primary" type="button" name="operation"
+                                    value="savechanges">Save changes 💾</button>
+                                <button name="logout" class="col btn btn-outline-dark" type="button"> Log
                                     Out 🔌</button>
                             </div>
                         </form>
@@ -71,26 +65,79 @@ if (SESSION_READ("user") == null) {
     </div>
     <script>
         $(document).ready(function () {
-            $('#profileEdit').on('submit', function (event) {
+            $('#profileDetailsForm').on('submit', function (event) {
                 event.preventDefault();
             });
-            $('#logoutBtn').on('click', function (event) {
+
+            $("#profileDetailsForm button[name='logout']").click(function (event) {
                 event.preventDefault();
 
+
                 $.ajax({
-                    url: './api/user/logout.php',
-                    method: 'POST',
+                    type: "POST",
+                    url: "./api/user/logout.php",
                     success: function (response) {
-                        response = JSON.parse(response);
-                        console.log('Logout successful');
-                        console.log(response);
-                        window.location.href = '?page=home';
+                        console.log(response)
+                        response = JSON.parse(response); // Parse the response to JSON
+                        console.log(response)
+                        if (response.success) {
+                            alert("succesful");
+                            window.location.href = '?page=profile&refresh=1';
+                        } else {
+                            console.log(response.error); // Log the error message to the console
+                            alert('logout failed:\n' + response.error);
+                        }
                     },
                     error: function (xhr, status, error) {
-                        console.error('Logout failed:', error);
+                        var errorMessage = xhr.responseText ? JSON.parse(xhr.responseText).error : 'Unknown error';
+                        console.log(errorMessage); // Log the error message to the console
+                        alert('logout failed:\n' + errorMessage);
                     }
                 });
             });
+
+            $("#profileDetailsForm button[name='save-changes']").click(function (event) {
+                event.preventDefault();
+
+
+                var formDataArray = $("#profileDetailsForm").serializeArray();
+                var formData = {};
+                formDataArray.forEach(function (item) {
+                    formData[item.name] = item.value;
+                });
+
+                var newData = {
+                    name: formData['name'],
+                    phone: formData['phone'],
+                    province: formData['province'],
+                    district: formData['district'],
+                    street: formData['street'],
+                }
+
+                $.ajax({
+                    type: "POST",
+                    url: "./api/user/update.php",
+                    data: newData,
+                    success: function (response) {
+                        console.log(response)
+                        response = JSON.parse(response); // Parse the response to JSON
+                        console.log(response)
+                        if (response.success) {
+                            alert("succesful");
+                            window.location.href = '?page=profile&refresh=1';
+                        } else {
+                            console.log(response.error); // Log the error message to the console
+                            alert('update failed:\n' + response.error);
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        var errorMessage = xhr.responseText ? JSON.parse(xhr.responseText).error : 'Unknown error';
+                        console.log(errorMessage); // Log the error message to the console
+                        alert('update failed:\n' + errorMessage);
+                    }
+                });
+            });
+
 
 
             function fetchProvinces() {
@@ -99,11 +146,11 @@ if (SESSION_READ("user") == null) {
                     method: 'POST',
                     success: function (response) {
                         response = JSON.parse(response);
-                        $('#select-provinces').empty();
+                        $("#profileDetailsForm select[name='province']").empty();
                         response.provinces.forEach(function (province) {
-                            $('#select-province').append('<option value="' + province.id + '">' + province.name + '</option>');
+                            $("#profileDetailsForm select[name='province']").append('<option value="' + province.id + '">' + province.name + '</option>');
                         });
-                        $('#select-provinces').append('<option value="-1"> Select Province</option > ');
+                        $("#profileDetailsForm select[name='province']").val(<?= $_SESSION["user"]["province_id"]; ?>);
                     },
                     error: function (xhr, status, error) {
                         console.error('Failed to fetch districts:', error);
@@ -117,11 +164,17 @@ if (SESSION_READ("user") == null) {
                     data: { province: provinceId },
                     success: function (response) {
                         response = JSON.parse(response);
-                        $('#select-district').empty();
+                        $("#profileDetailsForm select[name='district']").empty();
                         response.districts.forEach(function (district) {
-                            $('#select-district').append('<option value="' + district.id + '">' + district.name + '</option>');
+                            $("#profileDetailsForm select[name='district']").append('<option value="' + district.id + '">' + district.name + '</option>');
                         });
-                        $('#select-district').append('<option value="-1">Select District</option>');
+                        if ($("#profileDetailsForm select[name='province']").val() == <?= $_SESSION["user"]["province_id"]; ?>) {
+                            $("#profileDetailsForm select[name='district']").val(<?= $_SESSION["user"]["district_id"]; ?>);
+                        } else {
+                            $("#profileDetailsForm select[name='district']").append('<option value="-1" selected> Select District </option>');
+                            $("#profileDetailsForm select[name='street']").empty();
+                            $("#profileDetailsForm select[name='street']").append('<option value="-1" selected> Select Street </option>');
+                        }
                     },
                     error: function (xhr, status, error) {
                         console.error('Failed to fetch districts:', error);
@@ -135,35 +188,38 @@ if (SESSION_READ("user") == null) {
                     data: { district: districtId },
                     success: function (response) {
                         response = JSON.parse(response);
-                        $('#select-street').empty();
+                        $("#profileDetailsForm select[name='street']").empty();
                         response.streets.forEach(function (street) {
-                            $('#select-street').append('<option value="' + street.id + '">' + street.name + '</option>');
+                            $("#profileDetailsForm select[name='street']").append('<option value="' + street.id + '">' + street.name + '</option>');
                         });
-                        $('#select-street').append('<option value="-1">Select Street</option>');
+                        if ($("#profileDetailsForm select[name='district']").val() == <?= $_SESSION["user"]["district_id"]; ?>) {
+                            $("#profileDetailsForm select[name='street']").val(<?= $_SESSION["user"]["street_id"]; ?>);
+                        } else {
+                            $("#profileDetailsForm select[name='street']").append('<option value="-1" selected> Select Street </option>');
+                        }
                     },
                     error: function (xhr, status, error) {
                         console.error('Failed to fetch streets:', error);
                     }
                 });
             }
-            $('#select-province').on('change', function () {
-                var provinceId = $(this).val();
-                fetchDistricts(provinceId);
-                fetchStreets(1);
-            });
-            $('#select-district').on('change', function () {
+            fetchProvinces();
+            fetchDistricts(<?= $_SESSION["user"]["province_id"]; ?>);
+            fetchStreets(<?= $_SESSION["user"]["district_id"]; ?>);
+
+
+
+
+            $("#profileDetailsForm select[name='district']").on('change', function () {
                 var districtId = $(this).val();
                 // Fetch streets based on selected district
-                fetchStreets(districtId);
+                fetchStreets(districtId); // Corrected the parameter to pass the districtId
             });
-            fetchProvinces();
-            fetchDistricts(<?php echo $_SESSION["user"]["province_id"]; ?>);
-            fetchStreets(<?php echo $_SESSION["user"]["district_id"]; ?>);
 
-            $('#select-province').val(<?php echo $_SESSION["user"]["province_id"]; ?>);
-            $('#select-district').val(<?php echo $_SESSION["user"]["district_id"]; ?>);
-            $('#select-street').val(<?php echo $_SESSION["user"]["street_id"]; ?>);
-
+            $("#profileDetailsForm select[name='province']").on('change', function () {
+                var provinceId = $(this).val();
+                fetchDistricts(provinceId); // Fetch districts based on selected province
+            });
         });
 
     </script>

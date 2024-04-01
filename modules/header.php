@@ -1,7 +1,7 @@
 <?php
 
 //lets not remember the page
-$PAGE = isset ($_GET['page']) ? $_GET['page'] : "home"; //(isset($_SESSION['page']) ? $_SESSION['page'] : "home");
+$PAGE = isset($_GET['page']) ? $_GET['page'] : "home"; //(isset($_SESSION['page']) ? $_SESSION['page'] : "home");
 
 
 ?>
@@ -22,6 +22,7 @@ $PAGE = isset ($_GET['page']) ? $_GET['page'] : "home"; //(isset($_SESSION['page
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
     <!--modal generator -->
     <script src="./utils/modalGenerator.js"></script>
+    <script src="./utils/searchResultGenerator.js"></script>
     <link rel="stylesheet" href="index.css">
 
     <title>📦Foodbox 2</title>
@@ -62,7 +63,7 @@ $PAGE = isset ($_GET['page']) ? $_GET['page'] : "home"; //(isset($_SESSION['page
                     </li>
                     <li class="nav-item hover-scale text-center align-items-center">
                         <?php
-                        if (isset ($_SESSION['user'])) {
+                        if (isset($_SESSION['user'])) {
                             ?>
                             <a href="?page=profile"
                                 class="m-0 nav-link d-flex flex-nowrap w-100 h-100 gap-2 justify-content-center align-items-center">

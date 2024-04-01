@@ -12,6 +12,20 @@ class ModalTitle {
             </div>`;
     }
 }
+class ModalLabel {
+    constructor (label) {
+        this.label = label;
+        this.html = "";
+        this.id = 'label_' + Math.floor(Math.random() * 10000);
+        this.generateHtml();
+    }
+    generateHtml() {
+        this.html =
+            `<div class="mb-3">
+                <label id="${this.id}" class="">${this.label}</label>
+            </div>`;
+    }
+}
 class ModalImage {
     constructor (url) {
         this.url = url;

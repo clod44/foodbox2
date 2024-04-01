@@ -1,9 +1,31 @@
+<?php
+if (!isset($_GET['restaurantID'])) {
+    echo "there was an error loading restaurant products info";
+    exit;
+}
+$restaurantID = $_GET['restaurantID'];
+//fetch restaurant info
+$sql = "SELECT * FROM restaurants WHERE id=$restaurantID";
+$result = mysqli_query($conn, $sql);
+if (mysqli_num_rows($result) == 0) {
+    echo "restaurant not found";
+    exit;
+}
+$restaurant = mysqli_fetch_assoc($result);
+
+//optional
+$selectedFoodID = $_GET['selectedFoodID'] ?? null;
+?>
+
+
 <div class="container p-4">
     <div class="px-3 d-flex gap-5">
         <img src="./media/sample.jpg" class="rounded shadow" style="height:10rem;">
         <div class="h-100">
             <div class="d-flex justify-content-between align-items-center flex-nowrap">
-                <h2 class="fw-bold text-primary m-0">McDonald's</h2>
+                <h2 class="fw-bold text-primary m-0">
+                    <?= $restaurant['name'] ?>
+                </h2>
                 <!--favorite button-->
 
                 <div class="btn-group btn-group-sm" role="group" aria-label="Small button group">
@@ -12,9 +34,8 @@
                 </div>
 
             </div>
-            <p class="lead fs-6">Lorem ipsum dolor sit amet consectetur adipisicing elit. Obcaecati pariatur ipsum unde
-                adipisci, minus
-                quo error perferendis facere hic qui aut eaque deserunt, quam nostrum dignissimos atque nesciunt,
+            <p class="lead fs-6">
+                <?= $restaurant['description'] ?>
             </p>
             <p class="fw-bold">4.2/5⭐(+3000)</p>
             <button id="openModalBtn" class="btn btn-success btn-sm">test modal</button>
@@ -35,34 +56,6 @@
         } ?>
     </ul>
 
-    <script>
-        // Event listener for the button to trigger dynamic modal
-        $('#openModalBtn').click(function () {
-            // Example data for the modal content
-            const modalData = [
-                new ModalImage("./media/sample.jpg"),
-                new ModalTitle("Your Wishes:"),
-                new ModalInput("biggest wish:", "mywish1"),
-                new ModalInput("best wish:", "mywish2"),
-                new ModalTitle("Drink?:"),
-                new ModalRadio("CocaCola", "drink", 1, 10, true),
-                new ModalRadio("Pepsi", "drink", 2, 15, true),
-                new ModalTitle("Extras?:"),
-                new ModalCheckbox("Tomato", "extras", 12),
-                new ModalCheckbox("Salad", "extras", 0),
-                new ModalCheckbox("Melon", "extras", 5),
-                new ModalTitle("Final:"),
-                new ModalCheckbox("Agree to terms", "terms", 0),
-            ];
-
-            // Create an instance of ModalCreator
-            const modal = new ModalCreator("Example Modal", modalData, "Submit");
-
-            // Show the modal
-            modal.show();
-        });
-
-    </script>
     <div class="row">
         <!--restaurat menu content-->
         <div class="col d-flex flex-column gap-3">
@@ -74,18 +67,28 @@
                     </h3>
                     <div class="row align-items-start justify-content-around">
                         <?php
-                        for ($j = 0; $j < 10; $j++) {
+                        //for now, keep fetching all the foods
+                        $sql = "SELECT * FROM foods WHERE restaurant_id=$restaurantID AND only_extra=0";
+                        $result = mysqli_query($conn, $sql);
+                        $foods = mysqli_fetch_all($result, MYSQLI_ASSOC);
+                        foreach ($foods as $food) {
                             ?>
                             <div class="col-12 col-md-6 p-2">
-
-                                <div class="hover-scale m-0 p-3 border border-primary rounded shadow overflow-hidden"
+                                <!--clickable-->
+                                <div data-food-id="<?= $food['id'] ?>"
+                                    class="food hover-scale m-0 p-3 border border-primary rounded shadow overflow-hidden"
                                     style="cursor:pointer;">
                                     <div class="d-flex align-items-center justify-content-between w-100 h-100 m-0 p-0">
                                         <div class="d-flex flex-column align-items-start justify-content-between m-0 p-0">
-                                            <p class="m-0 p-0 fw-bold lead">Label</p>
-                                            <p class="text-break m-0 p-0 fs-7 small">Lorem ipsum dolor sit amet
-                                                consectetur adiro ratione rerum, pariatur sint alias aliquid.</p>
-                                            <span class="badge text-bg-warning fw-bold">12.00$</span>
+                                            <p class="m-0 p-0 fw-bold lead">
+                                                <?= $food['name'] ?>
+                                            </p>
+                                            <p class="text-break m-0 p-0 fs-7 small">
+                                                <?= $food['description'] ?>
+                                            </p>
+                                            <span class="badge text-bg-warning fw-bold">
+                                                <?= $food['price'] ?>$
+                                            </span>
                                         </div>
                                         <img src="./media/sample.jpg" class="rounded" style="width:5rem;">
                                     </div>
@@ -147,3 +150,74 @@
     </div>
 
 </div>
+
+
+
+<script>
+
+    $(document).ready(function () {
+        // Event listener for the button to trigger dynamic modal
+        $('.food').click(function () {
+            var foodID = $(this).data('food-id');
+            ShowFoodModalFromID(foodID);
+        });
+
+        function ShowFoodModalFromID(foodID) {
+
+            var food = null;
+            //get food info from endpoint
+            $.ajax({
+                type: "GET",
+                url: "./api/food/details.php",
+                data: {
+                    foodID: foodID
+                },
+                success: function (response) {
+                    console.log(response)
+                    response = JSON.parse(response); // Parse the response to JSON
+                    console.log(response)
+                    if (response.success) {
+                        food = response.food;
+                        ShowFoodModalFromFood(food);
+                    } else {
+                        console.log(response.error); // Log the error message to the console
+                        alert('food not found:\n' + response.error);
+                        return;
+                    }
+                },
+                error: function (xhr, status, error) {
+                    var errorMessage = xhr.responseText ? JSON.parse(xhr.responseText).error : 'Unknown error';
+                    console.log(errorMessage); // Log the error message to the console
+                    alert('query failed:\n' + errorMessage);
+                }
+            });
+
+        }
+
+        function ShowFoodModalFromFood(food) {
+            // Example data for the modal content
+            const modalData = [
+                new ModalImage("./media/sample.jpg"),
+                new ModalTitle(food['name']),
+                new ModalLabel(food['description']),
+                new ModalInput("biggest wish:", "mywish1"),
+                new ModalInput("best wish:", "mywish2"),
+                new ModalTitle("Drink?:"),
+                new ModalRadio("CocaCola", "drink", 1, 10, true),
+                new ModalRadio("Pepsi", "drink", 2, 15, true),
+                new ModalTitle("Extras?:"),
+                new ModalCheckbox("Tomato", "extras", 12),
+                new ModalCheckbox("Salad", "extras", 0),
+                new ModalCheckbox("Melon", "extras", 5),
+                new ModalTitle("Final:"),
+                new ModalCheckbox("Agree to terms", "terms", 0),
+            ];
+
+            // Create an instance of ModalCreator
+            const modal = new ModalCreator("Viewing: " + food['name'], modalData, "Add to Cart");
+            console.log("asd");
+            // Show the modal
+            modal.show();
+        }
+    });
+</script>

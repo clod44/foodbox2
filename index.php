@@ -5,7 +5,6 @@ ini_set('display_errors', 1);
 
 require_once "./utils/db.php";
 require_once "./utils/helpers.php";
-session_start();
 
 require "./modules/header.php";
 
