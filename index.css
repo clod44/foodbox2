@@ -12,6 +12,30 @@ html {
 }
 
 * {
+    transition-property: transform;
     transition-duration: 0.3s;
-    /* Smooth transition effect */
+    transition-timing-function: ease-in-out;
+}
+
+
+.scale-up-down {
+    animation: scale-up-down-animation 2s ease-in-out infinite alternate;
+    /* Apply the animation */
+}
+
+@keyframes scale-up-down-animation {
+    0% {
+        transform: scale(1.0);
+        /* Start the animation with the element at its normal size */
+    }
+
+    50% {
+        transform: scale(1.1);
+        /* Increase the size of the element by 20% */
+    }
+
+    100% {
+        transform: scale(1.0);
+        /* Return the element to its original size */
+    }
 }

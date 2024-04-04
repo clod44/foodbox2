@@ -6,20 +6,27 @@ require_once "../../utils/helpers.php";
 if ($_SERVER["REQUEST_METHOD"] == "GET") {
     // Base SQL query
     $sql = "SELECT 
-        foods.id as food_id, 
-        foods.name as food_name,
-        foods.description as food_description,
-        foods.price as food_price,
-        restaurants.id as restaurant_id,
-        restaurants.name as restaurant_name
+        foods.ID as FoodID, 
+        foods.Name as FoodName,
+        foods.Description as FoodDescription,
+        foods.Price as FoodPrice,
+        foods.OnlyExtra as FoodOnlyExtra,
+        foods.Visible as FoodVisible,
+        restaurants.ID as RestaurantID,
+        restaurants.Name as RestaurantName
         FROM foods, restaurants 
-        WHERE foods.restaurant_id = restaurants.id";
+        WHERE foods.RestaurantID = restaurants.ID";
 
     // Array to store conditions
     $conditions = [];
 
     // Check if categories are provided
     // TODO: implement category filtering
+
+    if (isset($_GET['foodID'])) {
+        $foodID = $_GET['foodID'];
+        $conditions[] = "foods.ID = $foodID";
+    }
 
     // Check if price-max is provided
     if (isset($_GET['price-max'])) {
@@ -32,6 +39,13 @@ if ($_SERVER["REQUEST_METHOD"] == "GET") {
         $priceMin = (float) $_GET['price-min'];
         $conditions[] = "foods.price >= $priceMin";
     }
+
+
+    if (isset($_GET['keywords'])) {
+        $keywords = '%' . $_GET['keywords'] . '%';
+        $conditions[] = "foods.name LIKE '$keywords'";
+    }
+
 
     // Check if score-min is provided
     //TODO: implement score rating filtering

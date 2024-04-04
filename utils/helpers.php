@@ -3,11 +3,11 @@
 
 function UPDATE_SESSION_USER()
 {
-    if (!isset ($_SESSION['user'])) {
+    if (!isset($_SESSION['user'])) {
         return false;
     }
     global $conn;
-    $sql = "SELECT * FROM users WHERE id={$_SESSION['user']['id']}";
+    $sql = "SELECT * FROM users WHERE ID={$_SESSION['user']['ID']}";
     $result = mysqli_query($conn, $sql);
     if (mysqli_num_rows($result) == 0) {
         return false;
@@ -17,6 +17,6 @@ function UPDATE_SESSION_USER()
 
 function IS_USER_LOGGED_IN()
 {
-    return isset ($_SESSION['user']);
+    return isset($_SESSION['user']);
 }
 ?>

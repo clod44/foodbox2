@@ -3,9 +3,9 @@ require_once "../../utils/db.php";
 require_once "../../utils/helpers.php";
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $district = $_POST["district"];
+    $districtID = $_POST["districtID"];
 
-    $sql = "SELECT * FROM streets WHERE district_id = $district";
+    $sql = "SELECT * FROM streets WHERE DistrictID = $districtID";
     $result = mysqli_query($conn, $sql);
     if (mysqli_num_rows($result) > 0) {
         $streets = mysqli_fetch_all($result, MYSQLI_ASSOC);

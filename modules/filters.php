@@ -26,18 +26,18 @@
             ?>
             <?php foreach ($categories as $category):
                 //find the amount of foods with this category
-                $sql = "SELECT * FROM food_category WHERE category_id={$category['id']}";
+                $sql = "SELECT * FROM foodcategories WHERE CategoryID={$category['ID']}";
                 $result = mysqli_query($conn, $sql);
                 $categoryContentCount = mysqli_num_rows($result);
-                if ($categoryContentCount < 1)
-                    continue;
+                //if ($categoryContentCount < 1)
+                //    continue;
                 ?>
                 <div class="form-check">
                     <input class="form-check-input category-checkbox" type="checkbox" name="categories[]"
-                        value="<?= $category['id'] ?>">
+                        value="<?= $category['ID'] ?>">
                     <label class="form-check-label">
-                        <?= $category['emoji'] ?> -
-                        <?= $category['name'] ?>
+                        <?= $category['Emoji'] ?> -
+                        <?= $category['Name'] ?>
                         <span class="fs-7 text-muted">
                             <?= "(" . $categoryContentCount . ")" ?>
                         </span>

@@ -9,14 +9,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         exit;
     }
 
-    $userID = $_SESSION['user']['id'];
+    $userID = $_SESSION['user']['ID'];
     $name = mysqli_real_escape_string($conn, $_POST["name"]);
     $phone = mysqli_real_escape_string($conn, $_POST['phone']);
-    $province = $_POST['province'];
-    $district = $_POST['district'];
-    $street = $_POST['street'];
 
-    $sql = "SELECT * FROM users WHERE id=$userID";
+    $sql = "SELECT * FROM users WHERE ID=$userID";
     $result = mysqli_query($conn, $sql);
     if (mysqli_num_rows($result) == 0) {
         http_response_code(401); // Unauthorized
@@ -26,7 +23,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // Update
 
 
-    $sql = "UPDATE users SET name='$name', phone='$phone', province_id=$province, district_id=$district, street_id=$street WHERE id=$userID";
+    $sql = "UPDATE users SET Name='$name', Phone='$phone' WHERE ID=$userID";
     $result = mysqli_query($conn, $sql);
     if (!$result) {
         http_response_code(500); // Internal Server Error

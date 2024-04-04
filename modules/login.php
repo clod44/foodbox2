@@ -146,8 +146,6 @@
 
 
 
-
-        // Function to handle registration
         $("#registerForm").submit(function (event) {
             event.preventDefault();
             var formData = $(this).serialize();
@@ -165,12 +163,13 @@
                 url: "./api/user/register.php",
                 data: formData,
                 success: function (response) {
+                    console.log(response); // Log the response to the console
                     response = JSON.parse(response); // Parse the response to JSON
                     console.log(response); // Log the response to the console
                     if (response.success) {
                         window.location.href = '?page=profile'; // Redirect to profile page
                     } else {
-                        ('Registration failed:\n' + response.error);
+                        alert('Registration failed:\n' + response.error);
                     }
                 },
                 error: function (xhr, status, error) {
@@ -181,6 +180,7 @@
             });
 
         });
+
 
     </script>
 

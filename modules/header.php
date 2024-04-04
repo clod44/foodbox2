@@ -25,7 +25,9 @@ $PAGE = isset($_GET['page']) ? $_GET['page'] : "home"; //(isset($_SESSION['page'
     <script src="./utils/searchResultGenerator.js"></script>
     <link rel="stylesheet" href="index.css">
 
-    <title>📦Foodbox 2</title>
+    <link rel="icon" type="image/png" sizes="16x16" href="./favicon.ico">
+
+    <title>Foodbox 2</title>
 </head>
 
 <body>
@@ -68,7 +70,7 @@ $PAGE = isset($_GET['page']) ? $_GET['page'] : "home"; //(isset($_SESSION['page'
                             <a href="?page=profile"
                                 class="m-0 nav-link d-flex flex-nowrap w-100 h-100 gap-2 justify-content-center align-items-center">
                                 <p class="m-0 p-0 fs-6 <?= ($PAGE == "profile" ? "active fw-bold" : ""); ?>">
-                                    <?= $_SESSION['user']['username'] ?>
+                                    <?= $_SESSION['user']['Username'] ?>
                                 </p>
                                 <img src="./media/sample.jpg" class="rounded-pill shadow" style="height:2em;">
                             </a>

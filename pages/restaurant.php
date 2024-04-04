@@ -38,7 +38,6 @@ $selectedFoodID = $_GET['selectedFoodID'] ?? null;
                 <?= $restaurant['description'] ?>
             </p>
             <p class="fw-bold">4.2/5⭐(+3000)</p>
-            <button id="openModalBtn" class="btn btn-success btn-sm">test modal</button>
         </div>
     </div>
 
@@ -219,5 +218,11 @@ $selectedFoodID = $_GET['selectedFoodID'] ?? null;
             // Show the modal
             modal.show();
         }
+
+        <?php
+        if (isset($_GET['selectedFoodID'])) {
+            echo "ShowFoodModalFromID('{$_GET['selectedFoodID']}');";
+        }
+        ?>
     });
 </script>
