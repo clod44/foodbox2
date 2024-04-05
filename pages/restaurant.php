@@ -1,11 +1,11 @@
 <?php
-if (!isset($_GET['restaurantID'])) {
+if (!isset($_GET['restaurantid'])) {
     echo "there was an error loading restaurant products info";
     exit;
 }
-$restaurantID = $_GET['restaurantID'];
+$restaurantid = $_GET['restaurantid'];
 //fetch restaurant info
-$sql = "SELECT * FROM restaurants WHERE id=$restaurantID";
+$sql = "SELECT * FROM restaurants WHERE id=$restaurantid";
 $result = mysqli_query($conn, $sql);
 if (mysqli_num_rows($result) == 0) {
     echo "restaurant not found";
@@ -14,7 +14,7 @@ if (mysqli_num_rows($result) == 0) {
 $restaurant = mysqli_fetch_assoc($result);
 
 //optional
-$selectedFoodID = $_GET['selectedFoodID'] ?? null;
+$selectedfoodid = $_GET['selectedfoodid'] ?? null;
 ?>
 
 
@@ -67,7 +67,7 @@ $selectedFoodID = $_GET['selectedFoodID'] ?? null;
                     <div class="row align-items-start justify-content-around">
                         <?php
                         //for now, keep fetching all the foods
-                        $sql = "SELECT * FROM foods WHERE restaurant_id=$restaurantID AND only_extra=0";
+                        $sql = "SELECT * FROM foods WHERE restaurantid=$restaurantid AND onlyextra=0";
                         $result = mysqli_query($conn, $sql);
                         $foods = mysqli_fetch_all($result, MYSQLI_ASSOC);
                         foreach ($foods as $food) {
@@ -157,31 +157,37 @@ $selectedFoodID = $_GET['selectedFoodID'] ?? null;
     $(document).ready(function () {
         // Event listener for the button to trigger dynamic modal
         $('.food').click(function () {
-            var foodID = $(this).data('food-id');
-            ShowFoodModalFromID(foodID);
+            var foodid = $(this).data('food-id');
+            ShowFoodModalFromID(foodid);
         });
 
-        function ShowFoodModalFromID(foodID) {
+        function ShowFoodModalFromID(foodid) {
 
             var food = null;
             //get food info from endpoint
             $.ajax({
                 type: "GET",
-                url: "./api/food/details.php",
+                url: "./api/food/query.php",
                 data: {
-                    foodID: foodID
+                    foodid: foodid
                 },
+                dataType: 'json', // Specify JSON dataType to automatically parse response as JSON
                 success: function (response) {
-                    console.log(response)
-                    response = JSON.parse(response); // Parse the response to JSON
-                    console.log(response)
+                    console.log(response);
                     if (response.success) {
-                        food = response.food;
-                        ShowFoodModalFromFood(food);
+                        console.log("Food retrieved");
+                        //console.log(response);
+                        var foodsAndRestaurantDetails = response.foodAndRestaurantDetails;
+                        if (Array.isArray(foodsAndRestaurantDetails)) {
+                            foodsAndRestaurantDetails.forEach(function (foodAndRestaurantDetail) {
+                                //console.log(foodAndRestaurantDetail); // Log each element to understand its structure
+                                ShowFoodModalFromFood(foodAndRestaurantDetail);
+                            });
+                        } else {
+                            console.log("foodsAndRestaurantDetails is not an array:", foodsAndRestaurantDetails);
+                        }
                     } else {
-                        console.log(response.error); // Log the error message to the console
-                        alert('food not found:\n' + response.error);
-                        return;
+                        console.log("Error:", response.error);
                     }
                 },
                 error: function (xhr, status, error) {
@@ -193,12 +199,12 @@ $selectedFoodID = $_GET['selectedFoodID'] ?? null;
 
         }
 
-        function ShowFoodModalFromFood(food) {
+        function ShowFoodModalFromFood(data) { //foodAndRestaurantDetail
             // Example data for the modal content
             const modalData = [
                 new ModalImage("./media/sample.jpg"),
-                new ModalTitle(food['name']),
-                new ModalLabel(food['description']),
+                new ModalTitle(data['foodname']),
+                new ModalLabel(data['fooddescription']),
                 new ModalInput("biggest wish:", "mywish1"),
                 new ModalInput("best wish:", "mywish2"),
                 new ModalTitle("Drink?:"),
@@ -213,15 +219,15 @@ $selectedFoodID = $_GET['selectedFoodID'] ?? null;
             ];
 
             // Create an instance of ModalCreator
-            const modal = new ModalCreator("Viewing: " + food['name'], modalData, "Add to Cart");
+            const modal = new ModalCreator("Viewing: " + data['foodname'], modalData, "Add to Cart");
             console.log("asd");
             // Show the modal
             modal.show();
         }
 
         <?php
-        if (isset($_GET['selectedFoodID'])) {
-            echo "ShowFoodModalFromID('{$_GET['selectedFoodID']}');";
+        if (isset($_GET['selectedfoodid'])) {
+            echo "ShowFoodModalFromID('{$_GET['selectedfoodid']}');";
         }
         ?>
     });

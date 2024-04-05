@@ -21,25 +21,25 @@ if (!IS_USER_LOGGED_IN()) {
                                     Username (how your name will appear to other users on the site)
                                 </label>
                                 <input readonly class="form-control" id="inputUsername" type="text"
-                                    value="<?= $_SESSION['user']['Username'] ?? null ?>">
+                                    value="<?= $_SESSION['user']['username'] ?? null ?>">
                             </div>
                             <div class="col mb-3">
                                 <label class="small mb-1">Full Name</label>
                                 <input class="form-control" name="name" type="text" placeholder="Enter your full name"
-                                    name="name" value="<?= $_SESSION['user']['Name'] ?? null ?>">
+                                    name="name" value="<?= $_SESSION['user']['name'] ?? null ?>">
                             </div>
 
                             <div class="mb-3">
                                 <label class="small mb-1">Email address</label>
                                 <input readonly class="form-control" type="email" placeholder="Enter your email address"
-                                    value="<?= $_SESSION['user']['Email'] ?? null ?>">
+                                    value="<?= $_SESSION['user']['email'] ?? null ?>">
                             </div>
                             <div class="row gx-3 mb-3">
                                 <div class="col-md-6">
                                     <label class="small mb-1" for="inputPhone">Phone number</label>
                                     <input class="form-control" name="phone" type="tel"
                                         placeholder="Enter your phone number"
-                                        value="<?= $_SESSION['user']['Phone'] ?? null ?>">
+                                        value="<?= $_SESSION['user']['phone'] ?? null ?>">
                                 </div>
                             </div>
                             <div class="row gap-3 mb-3">
@@ -48,7 +48,7 @@ if (!IS_USER_LOGGED_IN()) {
                                 <button name="logout" class="col btn btn-outline-dark" type="button"> Log
                                     Out 🔌</button>
                                 <?php
-                                if ($_SESSION['user']['UserType']) {
+                                if ($_SESSION['user']['usertype'] == 1) {
                                     ?>
                                     <a href="?page=panel" class="col btn btn-warning hover-scale" type="button"> Control
                                         Panel ⚙️</a>

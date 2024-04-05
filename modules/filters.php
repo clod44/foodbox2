@@ -26,7 +26,7 @@
             ?>
             <?php foreach ($categories as $category):
                 //find the amount of foods with this category
-                $sql = "SELECT * FROM foodcategories WHERE CategoryID={$category['ID']}";
+                $sql = "SELECT * FROM foodcategories WHERE categoryid={$category['id']}";
                 $result = mysqli_query($conn, $sql);
                 $categoryContentCount = mysqli_num_rows($result);
                 //if ($categoryContentCount < 1)
@@ -34,10 +34,10 @@
                 ?>
                 <div class="form-check">
                     <input class="form-check-input category-checkbox" type="checkbox" name="categories[]"
-                        value="<?= $category['ID'] ?>">
+                        value="<?= $category['id'] ?>">
                     <label class="form-check-label">
-                        <?= $category['Emoji'] ?> -
-                        <?= $category['Name'] ?>
+                        <?= $category['emoji'] ?> -
+                        <?= $category['name'] ?>
                         <span class="fs-7 text-muted">
                             <?= "(" . $categoryContentCount . ")" ?>
                         </span>
@@ -88,10 +88,8 @@
                 type: "GET",
                 url: "./api/food/query.php",
                 data: formData,
+                dataType: 'json', // Specify JSON dataType to automatically parse response as JSON
                 success: function (response) {
-                    console.log(response)
-                    response = JSON.parse(response); // Parse the response to JSON
-                    console.log(response)
                     console.log(response.echo)
                     if (response.success) {
                         console.log("filter success");

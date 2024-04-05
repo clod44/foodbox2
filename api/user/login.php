@@ -7,7 +7,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $password = $_POST["password"];
     $isRestaurant = isset($_POST["is-restaurant"]);
 
-    $sql = "SELECT * FROM " . ($isRestaurant ? "restaurants" : "users") . " WHERE Username = ? AND Password = ?";
+    $sql = "SELECT * FROM " . ($isRestaurant ? "restaurants" : "users") . " WHERE username = ? AND password = ?";
     $stmt = mysqli_prepare($conn, $sql);
     mysqli_stmt_bind_param($stmt, "ss", $username, $password);
     mysqli_stmt_execute($stmt);

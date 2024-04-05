@@ -70,7 +70,7 @@ $PAGE = isset($_GET['page']) ? $_GET['page'] : "home"; //(isset($_SESSION['page'
                             <a href="?page=profile"
                                 class="m-0 nav-link d-flex flex-nowrap w-100 h-100 gap-2 justify-content-center align-items-center">
                                 <p class="m-0 p-0 fs-6 <?= ($PAGE == "profile" ? "active fw-bold" : ""); ?>">
-                                    <?= $_SESSION['user']['Username'] ?>
+                                    <?= $_SESSION['user']['username'] ?>
                                 </p>
                                 <img src="./media/sample.jpg" class="rounded-pill shadow" style="height:2em;">
                             </a>

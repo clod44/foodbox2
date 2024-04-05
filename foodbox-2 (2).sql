@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost:3306
--- Generation Time: Apr 03, 2024 at 11:19 PM
+-- Generation Time: Apr 05, 2024 at 06:55 PM
 -- Server version: 8.0.30
 -- PHP Version: 8.1.10
 
@@ -28,12 +28,12 @@ SET time_zone = "+00:00";
 --
 
 CREATE TABLE `addresses` (
-  `ID` int NOT NULL,
-  `UserID` int DEFAULT NULL,
-  `StreetID` int DEFAULT NULL,
-  `DistrictID` int DEFAULT NULL,
-  `CityID` int DEFAULT NULL,
-  `Active` tinyint(1) DEFAULT NULL
+  `id` int NOT NULL,
+  `userid` int DEFAULT NULL,
+  `streetid` int DEFAULT NULL,
+  `districtid` int DEFAULT NULL,
+  `cityid` int DEFAULT NULL,
+  `active` tinyint(1) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_turkish_ci;
 
 -- --------------------------------------------------------
@@ -43,11 +43,11 @@ CREATE TABLE `addresses` (
 --
 
 CREATE TABLE `answers` (
-  `ID` int NOT NULL,
-  `QuestionID` int DEFAULT NULL,
-  `Text` varchar(30) COLLATE utf8mb4_turkish_ci DEFAULT NULL,
-  `Price` float DEFAULT NULL,
-  `Active` tinyint(1) DEFAULT NULL
+  `id` int NOT NULL,
+  `questionid` int NOT NULL,
+  `text` varchar(30) CHARACTER SET utf8mb4 COLLATE utf8mb4_turkish_ci NOT NULL,
+  `price` float NOT NULL,
+  `active` tinyint(1) NOT NULL DEFAULT '1'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_turkish_ci;
 
 -- --------------------------------------------------------
@@ -57,17 +57,17 @@ CREATE TABLE `answers` (
 --
 
 CREATE TABLE `categories` (
-  `ID` int NOT NULL,
-  `Name` varchar(30) CHARACTER SET utf8mb4 COLLATE utf8mb4_turkish_ci NOT NULL,
-  `Emoji` varchar(30) COLLATE utf8mb4_turkish_ci NOT NULL,
-  `Active` tinyint(1) NOT NULL DEFAULT '1'
+  `id` int NOT NULL,
+  `name` varchar(30) CHARACTER SET utf8mb4 COLLATE utf8mb4_turkish_ci NOT NULL,
+  `emoji` varchar(30) CHARACTER SET utf8mb4 COLLATE utf8mb4_turkish_ci NOT NULL,
+  `active` tinyint(1) NOT NULL DEFAULT '1'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_turkish_ci;
 
 --
 -- Dumping data for table `categories`
 --
 
-INSERT INTO `categories` (`ID`, `Name`, `Emoji`, `Active`) VALUES
+INSERT INTO `categories` (`id`, `name`, `emoji`, `active`) VALUES
 (1, 'Fast Food', '🍔', 1),
 (2, 'Italian Cuisine', '🍝', 1),
 (3, 'Asian Cuisine', '🍜', 1),
@@ -106,16 +106,16 @@ INSERT INTO `categories` (`ID`, `Name`, `Emoji`, `Active`) VALUES
 --
 
 CREATE TABLE `cities` (
-  `ID` int NOT NULL,
-  `CityName` varchar(30) COLLATE utf8mb4_turkish_ci DEFAULT NULL,
-  `Active` tinyint(1) DEFAULT NULL
+  `id` int NOT NULL,
+  `name` varchar(30) CHARACTER SET utf8mb4 COLLATE utf8mb4_turkish_ci DEFAULT NULL,
+  `active` tinyint(1) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_turkish_ci;
 
 --
 -- Dumping data for table `cities`
 --
 
-INSERT INTO `cities` (`ID`, `CityName`, `Active`) VALUES
+INSERT INTO `cities` (`id`, `name`, `active`) VALUES
 (1, 'Istanbul', 1),
 (2, 'Ankara', 1),
 (3, 'Izmir', 1);
@@ -127,11 +127,11 @@ INSERT INTO `cities` (`ID`, `CityName`, `Active`) VALUES
 --
 
 CREATE TABLE `comments` (
-  `ID` int NOT NULL,
-  `OrderDetailID` int DEFAULT NULL,
-  `Score` int DEFAULT NULL,
-  `Comment` varchar(200) COLLATE utf8mb4_turkish_ci DEFAULT NULL,
-  `Active` tinyint(1) DEFAULT NULL
+  `id` int NOT NULL,
+  `orderdetailid` int NOT NULL,
+  `score` int NOT NULL,
+  `comment` varchar(200) CHARACTER SET utf8mb4 COLLATE utf8mb4_turkish_ci NOT NULL,
+  `active` tinyint(1) NOT NULL DEFAULT '1'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_turkish_ci;
 
 -- --------------------------------------------------------
@@ -141,17 +141,17 @@ CREATE TABLE `comments` (
 --
 
 CREATE TABLE `districts` (
-  `ID` int NOT NULL,
-  `DistrictName` varchar(30) COLLATE utf8mb4_turkish_ci DEFAULT NULL,
-  `CityID` int DEFAULT NULL,
-  `Active` tinyint(1) DEFAULT NULL
+  `id` int NOT NULL,
+  `name` varchar(30) CHARACTER SET utf8mb4 COLLATE utf8mb4_turkish_ci NOT NULL,
+  `cityid` int NOT NULL,
+  `active` tinyint(1) NOT NULL DEFAULT '1'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_turkish_ci;
 
 --
 -- Dumping data for table `districts`
 --
 
-INSERT INTO `districts` (`ID`, `DistrictName`, `CityID`, `Active`) VALUES
+INSERT INTO `districts` (`id`, `name`, `cityid`, `active`) VALUES
 (1, 'Kadikoy', 1, 1),
 (2, 'Besiktas', 1, 1),
 (3, 'Sariyer', 1, 1),
@@ -169,10 +169,10 @@ INSERT INTO `districts` (`ID`, `DistrictName`, `CityID`, `Active`) VALUES
 --
 
 CREATE TABLE `favorites` (
-  `ID` int NOT NULL,
-  `FoodID` int DEFAULT NULL,
-  `UserID` int DEFAULT NULL,
-  `Active` tinyint(1) DEFAULT NULL
+  `id` int NOT NULL,
+  `foodid` int NOT NULL,
+  `userid` int NOT NULL,
+  `active` tinyint(1) NOT NULL DEFAULT '1'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_turkish_ci;
 
 -- --------------------------------------------------------
@@ -182,10 +182,10 @@ CREATE TABLE `favorites` (
 --
 
 CREATE TABLE `foodcategories` (
-  `ID` int NOT NULL,
-  `FoodID` int DEFAULT NULL,
-  `CategoryID` int DEFAULT NULL,
-  `Active` tinyint(1) DEFAULT NULL
+  `id` int NOT NULL,
+  `foodid` int NOT NULL,
+  `categoryid` int NOT NULL,
+  `active` tinyint(1) NOT NULL DEFAULT '1'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_turkish_ci;
 
 -- --------------------------------------------------------
@@ -195,21 +195,21 @@ CREATE TABLE `foodcategories` (
 --
 
 CREATE TABLE `foods` (
-  `ID` int NOT NULL,
-  `Name` varchar(60) COLLATE utf8mb4_turkish_ci DEFAULT NULL,
-  `Description` varchar(150) COLLATE utf8mb4_turkish_ci DEFAULT NULL,
-  `RestaurantID` int DEFAULT NULL,
-  `OnlyExtra` tinyint(1) DEFAULT NULL,
-  `Price` float DEFAULT NULL,
-  `Visible` tinyint(1) NOT NULL DEFAULT '1',
-  `Active` tinyint(1) NOT NULL DEFAULT '1'
+  `id` int NOT NULL,
+  `name` varchar(60) CHARACTER SET utf8mb4 COLLATE utf8mb4_turkish_ci NOT NULL,
+  `description` varchar(150) CHARACTER SET utf8mb4 COLLATE utf8mb4_turkish_ci NOT NULL,
+  `restaurantid` int NOT NULL,
+  `onlyextra` tinyint(1) NOT NULL,
+  `price` float NOT NULL,
+  `visible` tinyint(1) NOT NULL DEFAULT '1',
+  `active` tinyint(1) NOT NULL DEFAULT '1'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_turkish_ci;
 
 --
 -- Dumping data for table `foods`
 --
 
-INSERT INTO `foods` (`ID`, `Name`, `Description`, `RestaurantID`, `OnlyExtra`, `Price`, `Visible`, `Active`) VALUES
+INSERT INTO `foods` (`id`, `name`, `description`, `restaurantid`, `onlyextra`, `price`, `visible`, `active`) VALUES
 (1, 'aaaaa', 'bbbbb', 1, 1, 99, 1, 1),
 (2, 'Test Burger', 'yummy en leziz burger bu', 1, 0, 14.99, 1, 1),
 (3, 'Kral Kebab', 'OOOF ATEŞ GIBI', 1, 0, 29.99, 1, 1),
@@ -225,9 +225,9 @@ INSERT INTO `foods` (`ID`, `Name`, `Description`, `RestaurantID`, `OnlyExtra`, `
 --
 
 CREATE TABLE `menufoods` (
-  `ID` int NOT NULL,
-  `MenuID` int DEFAULT NULL,
-  `FoodID` int DEFAULT NULL
+  `id` int NOT NULL,
+  `menuid` int NOT NULL,
+  `foodid` int NOT NULL DEFAULT '1'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_turkish_ci;
 
 -- --------------------------------------------------------
@@ -237,10 +237,10 @@ CREATE TABLE `menufoods` (
 --
 
 CREATE TABLE `menus` (
-  `ID` int NOT NULL,
-  `RestaurantID` int DEFAULT NULL,
-  `Name` varchar(60) COLLATE utf8mb4_turkish_ci DEFAULT NULL,
-  `Description` varchar(150) COLLATE utf8mb4_turkish_ci DEFAULT NULL
+  `id` int NOT NULL,
+  `restaurantid` int NOT NULL,
+  `name` varchar(60) CHARACTER SET utf8mb4 COLLATE utf8mb4_turkish_ci NOT NULL,
+  `description` varchar(150) CHARACTER SET utf8mb4 COLLATE utf8mb4_turkish_ci NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_turkish_ci;
 
 -- --------------------------------------------------------
@@ -250,12 +250,12 @@ CREATE TABLE `menus` (
 --
 
 CREATE TABLE `orderdetailquestionanswer` (
-  `ID` int NOT NULL,
-  `OrderDetailID` int DEFAULT NULL,
-  `QuestionID` int DEFAULT NULL,
-  `AnswerID` int DEFAULT NULL,
-  `Price` float DEFAULT NULL,
-  `Active` tinyint(1) DEFAULT NULL
+  `id` int NOT NULL,
+  `orderdetailid` int NOT NULL,
+  `questionid` int NOT NULL,
+  `answerid` int NOT NULL,
+  `price` float NOT NULL,
+  `active` tinyint(1) NOT NULL DEFAULT '1'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_turkish_ci;
 
 -- --------------------------------------------------------
@@ -265,11 +265,11 @@ CREATE TABLE `orderdetailquestionanswer` (
 --
 
 CREATE TABLE `orderdetails` (
-  `ID` int NOT NULL,
-  `OrderID` int DEFAULT NULL,
-  `FoodID` int DEFAULT NULL,
-  `Price` float DEFAULT NULL,
-  `Active` tinyint(1) DEFAULT NULL
+  `id` int NOT NULL,
+  `orderid` int NOT NULL,
+  `foodid` int NOT NULL,
+  `price` float NOT NULL,
+  `active` tinyint(1) NOT NULL DEFAULT '1'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_turkish_ci;
 
 -- --------------------------------------------------------
@@ -279,14 +279,14 @@ CREATE TABLE `orderdetails` (
 --
 
 CREATE TABLE `orders` (
-  `ID` int NOT NULL,
-  `RestaurantID` int DEFAULT NULL,
-  `UserID` int DEFAULT NULL,
-  `ApprovalPersonnel` int DEFAULT NULL,
-  `DeliveryPersonnel` int DEFAULT NULL,
-  `Status` varchar(50) COLLATE utf8mb4_turkish_ci DEFAULT NULL,
-  `OrderConfirmed` tinyint(1) DEFAULT NULL,
-  `Active` tinyint(1) DEFAULT NULL
+  `id` int NOT NULL,
+  `restaurantid` int NOT NULL,
+  `userid` int NOT NULL,
+  `approvalpersonnel` int NOT NULL,
+  `deliverypersonnel` int NOT NULL,
+  `status` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_turkish_ci NOT NULL,
+  `orderconfirmed` tinyint(1) NOT NULL,
+  `active` tinyint(1) NOT NULL DEFAULT '1'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_turkish_ci;
 
 -- --------------------------------------------------------
@@ -296,10 +296,10 @@ CREATE TABLE `orders` (
 --
 
 CREATE TABLE `questionanswers` (
-  `ID` int NOT NULL,
-  `QuestionID` int DEFAULT NULL,
-  `AnswerID` int DEFAULT NULL,
-  `Active` tinyint(1) DEFAULT NULL
+  `id` int NOT NULL,
+  `questionid` int NOT NULL,
+  `answerid` int NOT NULL,
+  `active` tinyint(1) NOT NULL DEFAULT '1'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_turkish_ci;
 
 -- --------------------------------------------------------
@@ -310,11 +310,11 @@ CREATE TABLE `questionanswers` (
 
 CREATE TABLE `questions` (
   `ID` int NOT NULL,
-  `FoodID` int DEFAULT NULL,
-  `Text` varchar(30) COLLATE utf8mb4_turkish_ci DEFAULT NULL,
-  `Required` tinyint(1) DEFAULT NULL,
-  `Type` int DEFAULT NULL,
-  `Active` tinyint(1) DEFAULT NULL
+  `foodid` int NOT NULL,
+  `text` varchar(30) CHARACTER SET utf8mb4 COLLATE utf8mb4_turkish_ci NOT NULL,
+  `required` tinyint(1) NOT NULL,
+  `type` int NOT NULL,
+  `active` tinyint(1) NOT NULL DEFAULT '1'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_turkish_ci;
 
 -- --------------------------------------------------------
@@ -324,23 +324,24 @@ CREATE TABLE `questions` (
 --
 
 CREATE TABLE `restaurants` (
-  `ID` int NOT NULL,
-  `Username` varchar(30) COLLATE utf8mb4_turkish_ci DEFAULT NULL,
-  `Name` varchar(60) COLLATE utf8mb4_turkish_ci DEFAULT NULL,
-  `Email` varchar(60) COLLATE utf8mb4_turkish_ci DEFAULT NULL,
-  `Phone` varchar(15) COLLATE utf8mb4_turkish_ci DEFAULT NULL,
-  `Password` varchar(60) COLLATE utf8mb4_turkish_ci DEFAULT NULL,
-  `AddressID` int DEFAULT NULL,
-  `UserType` int NOT NULL DEFAULT '1',
-  `Active` tinyint(1) DEFAULT NULL
+  `id` int NOT NULL,
+  `username` varchar(30) CHARACTER SET utf8mb4 COLLATE utf8mb4_turkish_ci DEFAULT NULL,
+  `name` varchar(60) CHARACTER SET utf8mb4 COLLATE utf8mb4_turkish_ci DEFAULT NULL,
+  `email` varchar(60) CHARACTER SET utf8mb4 COLLATE utf8mb4_turkish_ci DEFAULT NULL,
+  `phone` varchar(15) CHARACTER SET utf8mb4 COLLATE utf8mb4_turkish_ci DEFAULT NULL,
+  `password` varchar(60) CHARACTER SET utf8mb4 COLLATE utf8mb4_turkish_ci DEFAULT NULL,
+  `addressID` int DEFAULT NULL,
+  `description` varchar(180) COLLATE utf8mb4_turkish_ci NOT NULL DEFAULT 'default description',
+  `usertype` int NOT NULL DEFAULT '1',
+  `active` tinyint(1) DEFAULT '1'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_turkish_ci;
 
 --
 -- Dumping data for table `restaurants`
 --
 
-INSERT INTO `restaurants` (`ID`, `Username`, `Name`, `Email`, `Phone`, `Password`, `AddressID`, `UserType`, `Active`) VALUES
-(1, 'mcdonalds', 'McDonalds', 'mcdonalds@gmail.com', NULL, '123', NULL, 1, NULL);
+INSERT INTO `restaurants` (`id`, `username`, `name`, `email`, `phone`, `password`, `addressID`, `description`, `usertype`, `active`) VALUES
+(1, 'mcdonalds', 'McDonalds', 'mcdonalds@gmail.com', NULL, '123', NULL, 'default description', 1, NULL);
 
 -- --------------------------------------------------------
 
@@ -349,17 +350,17 @@ INSERT INTO `restaurants` (`ID`, `Username`, `Name`, `Email`, `Phone`, `Password
 --
 
 CREATE TABLE `streets` (
-  `ID` int NOT NULL,
-  `NeighborhoodName` varchar(30) COLLATE utf8mb4_turkish_ci DEFAULT NULL,
-  `DistrictID` int DEFAULT NULL,
-  `Active` tinyint(1) DEFAULT NULL
+  `id` int NOT NULL,
+  `name` varchar(30) CHARACTER SET utf8mb4 COLLATE utf8mb4_turkish_ci NOT NULL,
+  `districtid` int NOT NULL,
+  `active` tinyint(1) NOT NULL DEFAULT '1'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_turkish_ci;
 
 --
 -- Dumping data for table `streets`
 --
 
-INSERT INTO `streets` (`ID`, `NeighborhoodName`, `DistrictID`, `Active`) VALUES
+INSERT INTO `streets` (`id`, `name`, `districtid`, `active`) VALUES
 (1, 'Bagdat Caddesi', 1, 1),
 (2, 'Moda Caddesi', 1, 1),
 (3, 'Caddebostan Caddesi', 1, 1),
@@ -395,23 +396,23 @@ INSERT INTO `streets` (`ID`, `NeighborhoodName`, `DistrictID`, `Active`) VALUES
 --
 
 CREATE TABLE `users` (
-  `ID` int NOT NULL,
-  `Username` varchar(30) COLLATE utf8mb4_turkish_ci DEFAULT NULL,
-  `Name` varchar(60) COLLATE utf8mb4_turkish_ci DEFAULT NULL,
-  `Email` varchar(60) COLLATE utf8mb4_turkish_ci DEFAULT NULL,
-  `Phone` varchar(15) COLLATE utf8mb4_turkish_ci DEFAULT NULL,
-  `Password` varchar(60) COLLATE utf8mb4_turkish_ci DEFAULT NULL,
-  `RestaurantID` int DEFAULT NULL,
-  `AddressID` int DEFAULT NULL,
-  `UserType` int NOT NULL DEFAULT '0',
-  `Active` tinyint(1) DEFAULT NULL
+  `id` int NOT NULL,
+  `username` varchar(30) CHARACTER SET utf8mb4 COLLATE utf8mb4_turkish_ci DEFAULT NULL,
+  `name` varchar(60) CHARACTER SET utf8mb4 COLLATE utf8mb4_turkish_ci DEFAULT NULL,
+  `email` varchar(60) CHARACTER SET utf8mb4 COLLATE utf8mb4_turkish_ci DEFAULT NULL,
+  `phone` varchar(15) CHARACTER SET utf8mb4 COLLATE utf8mb4_turkish_ci DEFAULT NULL,
+  `password` varchar(60) CHARACTER SET utf8mb4 COLLATE utf8mb4_turkish_ci DEFAULT NULL,
+  `restaurantid` int DEFAULT NULL,
+  `addressid` int DEFAULT NULL,
+  `usertype` int NOT NULL DEFAULT '0',
+  `active` tinyint(1) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_turkish_ci;
 
 --
 -- Dumping data for table `users`
 --
 
-INSERT INTO `users` (`ID`, `Username`, `Name`, `Email`, `Phone`, `Password`, `RestaurantID`, `AddressID`, `UserType`, `Active`) VALUES
+INSERT INTO `users` (`id`, `username`, `name`, `email`, `phone`, `password`, `restaurantid`, `addressid`, `usertype`, `active`) VALUES
 (1, 'aga', 'McDonaldsss', 'aga@gmail.com', '123123', '123', NULL, NULL, 0, NULL);
 
 --
@@ -422,91 +423,91 @@ INSERT INTO `users` (`ID`, `Username`, `Name`, `Email`, `Phone`, `Password`, `Re
 -- Indexes for table `addresses`
 --
 ALTER TABLE `addresses`
-  ADD PRIMARY KEY (`ID`);
+  ADD PRIMARY KEY (`id`);
 
 --
 -- Indexes for table `answers`
 --
 ALTER TABLE `answers`
-  ADD PRIMARY KEY (`ID`);
+  ADD PRIMARY KEY (`id`);
 
 --
 -- Indexes for table `categories`
 --
 ALTER TABLE `categories`
-  ADD PRIMARY KEY (`ID`);
+  ADD PRIMARY KEY (`id`);
 
 --
 -- Indexes for table `cities`
 --
 ALTER TABLE `cities`
-  ADD PRIMARY KEY (`ID`);
+  ADD PRIMARY KEY (`id`);
 
 --
 -- Indexes for table `comments`
 --
 ALTER TABLE `comments`
-  ADD PRIMARY KEY (`ID`);
+  ADD PRIMARY KEY (`id`);
 
 --
 -- Indexes for table `districts`
 --
 ALTER TABLE `districts`
-  ADD PRIMARY KEY (`ID`);
+  ADD PRIMARY KEY (`id`);
 
 --
 -- Indexes for table `favorites`
 --
 ALTER TABLE `favorites`
-  ADD PRIMARY KEY (`ID`);
+  ADD PRIMARY KEY (`id`);
 
 --
 -- Indexes for table `foodcategories`
 --
 ALTER TABLE `foodcategories`
-  ADD PRIMARY KEY (`ID`);
+  ADD PRIMARY KEY (`id`);
 
 --
 -- Indexes for table `foods`
 --
 ALTER TABLE `foods`
-  ADD PRIMARY KEY (`ID`);
+  ADD PRIMARY KEY (`id`);
 
 --
 -- Indexes for table `menufoods`
 --
 ALTER TABLE `menufoods`
-  ADD PRIMARY KEY (`ID`);
+  ADD PRIMARY KEY (`id`);
 
 --
 -- Indexes for table `menus`
 --
 ALTER TABLE `menus`
-  ADD PRIMARY KEY (`ID`);
+  ADD PRIMARY KEY (`id`);
 
 --
 -- Indexes for table `orderdetailquestionanswer`
 --
 ALTER TABLE `orderdetailquestionanswer`
-  ADD PRIMARY KEY (`ID`);
+  ADD PRIMARY KEY (`id`);
 
 --
 -- Indexes for table `orderdetails`
 --
 ALTER TABLE `orderdetails`
-  ADD PRIMARY KEY (`ID`);
+  ADD PRIMARY KEY (`id`);
 
 --
 -- Indexes for table `orders`
 --
 ALTER TABLE `orders`
-  ADD PRIMARY KEY (`ID`);
+  ADD PRIMARY KEY (`id`);
 
 --
 -- Indexes for table `questionanswers`
 --
 ALTER TABLE `questionanswers`
-  ADD PRIMARY KEY (`ID`);
+  ADD PRIMARY KEY (`id`);
 
 --
 -- Indexes for table `questions`
@@ -518,19 +519,19 @@ ALTER TABLE `questions`
 -- Indexes for table `restaurants`
 --
 ALTER TABLE `restaurants`
-  ADD PRIMARY KEY (`ID`);
+  ADD PRIMARY KEY (`id`);
 
 --
 -- Indexes for table `streets`
 --
 ALTER TABLE `streets`
-  ADD PRIMARY KEY (`ID`);
+  ADD PRIMARY KEY (`id`);
 
 --
 -- Indexes for table `users`
 --
 ALTER TABLE `users`
-  ADD PRIMARY KEY (`ID`);
+  ADD PRIMARY KEY (`id`);
 
 --
 -- AUTO_INCREMENT for dumped tables
@@ -540,91 +541,91 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT for table `addresses`
 --
 ALTER TABLE `addresses`
-  MODIFY `ID` int NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `answers`
 --
 ALTER TABLE `answers`
-  MODIFY `ID` int NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `categories`
 --
 ALTER TABLE `categories`
-  MODIFY `ID` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=31;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=31;
 
 --
 -- AUTO_INCREMENT for table `cities`
 --
 ALTER TABLE `cities`
-  MODIFY `ID` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT for table `comments`
 --
 ALTER TABLE `comments`
-  MODIFY `ID` int NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `districts`
 --
 ALTER TABLE `districts`
-  MODIFY `ID` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
 
 --
 -- AUTO_INCREMENT for table `favorites`
 --
 ALTER TABLE `favorites`
-  MODIFY `ID` int NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `foodcategories`
 --
 ALTER TABLE `foodcategories`
-  MODIFY `ID` int NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `foods`
 --
 ALTER TABLE `foods`
-  MODIFY `ID` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT for table `menufoods`
 --
 ALTER TABLE `menufoods`
-  MODIFY `ID` int NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `menus`
 --
 ALTER TABLE `menus`
-  MODIFY `ID` int NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `orderdetailquestionanswer`
 --
 ALTER TABLE `orderdetailquestionanswer`
-  MODIFY `ID` int NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `orderdetails`
 --
 ALTER TABLE `orderdetails`
-  MODIFY `ID` int NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `orders`
 --
 ALTER TABLE `orders`
-  MODIFY `ID` int NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `questionanswers`
 --
 ALTER TABLE `questionanswers`
-  MODIFY `ID` int NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `questions`
@@ -636,19 +637,19 @@ ALTER TABLE `questions`
 -- AUTO_INCREMENT for table `restaurants`
 --
 ALTER TABLE `restaurants`
-  MODIFY `ID` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT for table `streets`
 --
 ALTER TABLE `streets`
-  MODIFY `ID` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=28;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=28;
 
 --
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `ID` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

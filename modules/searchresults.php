@@ -36,6 +36,7 @@
                         if (Array.isArray(foodsAndRestaurantDetails)) {
                             foodsAndRestaurantDetails.forEach(function (foodAndRestaurantDetail) {
                                 //console.log(foodAndRestaurantDetail); // Log each element to understand its structure
+
                                 GenerateSearchResult(foodAndRestaurantDetail); // Call GenerateSearchResult function
                             });
                         } else {
@@ -51,7 +52,6 @@
                     alert('An error occurred:\n' + errorMessage);
                 }
             });
-
         });
     </script>
 </div>

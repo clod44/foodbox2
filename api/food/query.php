@@ -6,16 +6,16 @@ require_once "../../utils/helpers.php";
 if ($_SERVER["REQUEST_METHOD"] == "GET") {
     // Base SQL query
     $sql = "SELECT 
-        foods.ID as FoodID, 
-        foods.Name as FoodName,
-        foods.Description as FoodDescription,
-        foods.Price as FoodPrice,
-        foods.OnlyExtra as FoodOnlyExtra,
-        foods.Visible as FoodVisible,
-        restaurants.ID as RestaurantID,
-        restaurants.Name as RestaurantName
+        foods.id as foodid, 
+        foods.name as foodname,
+        foods.description as fooddescription,
+        foods.price as foodprice,
+        foods.onlyextra as foodonlyextra,
+        foods.visible as foodvisible,
+        restaurants.id as restaurantid,
+        restaurants.name as restaurantname
         FROM foods, restaurants 
-        WHERE foods.RestaurantID = restaurants.ID";
+        WHERE foods.restaurantid = restaurants.id";
 
     // Array to store conditions
     $conditions = [];
@@ -23,9 +23,9 @@ if ($_SERVER["REQUEST_METHOD"] == "GET") {
     // Check if categories are provided
     // TODO: implement category filtering
 
-    if (isset($_GET['foodID'])) {
-        $foodID = $_GET['foodID'];
-        $conditions[] = "foods.ID = $foodID";
+    if (isset($_GET['foodid'])) {
+        $foodid = $_GET['foodid'];
+        $conditions[] = "foods.id = $foodid";
     }
 
     // Check if price-max is provided
