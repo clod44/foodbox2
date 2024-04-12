@@ -14,46 +14,50 @@ if ($_SERVER["REQUEST_METHOD"] == "GET") {
         foods.visible as foodvisible,
         restaurants.id as restaurantid,
         restaurants.name as restaurantname
-        FROM foods, restaurants 
-        WHERE foods.restaurantid = restaurants.id";
+        FROM foods, restaurants " .
+        (isset($_GET["categories"]) ? ", foodcategories" : "") .
+        " WHERE foods.restaurantid = restaurants.id";
 
-    // Array to store conditions
+    //"AND" conditions 
     $conditions = [];
-
-    // Check if categories are provided
-    // TODO: implement category filtering
 
     if (isset($_GET['foodid'])) {
         $foodid = $_GET['foodid'];
         $conditions[] = "foods.id = $foodid";
     }
-
-    // Check if price-max is provided
     if (isset($_GET['price-max'])) {
         $priceMax = (float) $_GET['price-max'];
         $conditions[] = "foods.price <= $priceMax";
     }
-
-    // Check if price-min is provided
     if (isset($_GET['price-min'])) {
         $priceMin = (float) $_GET['price-min'];
         $conditions[] = "foods.price >= $priceMin";
     }
-
-
     if (isset($_GET['keywords'])) {
         $keywords = '%' . $_GET['keywords'] . '%';
         $conditions[] = "foods.name LIKE '$keywords'";
     }
+    if (!empty($conditions)) {
+        $sql .= " AND " . implode(" AND ", $conditions);
+    }
 
+
+    //"OR" conditions 
+    $conditions = [];
+    if (isset($_GET['categories'])) {
+        //for each category
+        foreach ($_GET['categories'] as $categoryid) {
+            $conditions[] = "(foodcategories.categoryid = $categoryid AND foodcategories.foodid=foods.id)";
+        }
+    }
+    if (!empty($conditions)) {
+        $sql .= " AND (" . implode(" OR ", $conditions) . ")";
+    }
+    savelog($sql);
 
     // Check if score-min is provided
     //TODO: implement score rating filtering
 
-    // Add conditions to the SQL query
-    if (!empty($conditions)) {
-        $sql .= " AND " . implode(" AND ", $conditions);
-    }
 
     // Check if sort-dir and sort-type are provided
     if (isset($_GET['sort-dir']) && isset($_GET['sort-type'])) {

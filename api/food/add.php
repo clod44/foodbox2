@@ -9,7 +9,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         echo json_encode(["error" => "Unauthorized"]);
         exit;
     }
-    if ($_SESSION['user']['UserType'] != 1) {
+    if ($_SESSION['user']['usertype'] != 1) {
         http_response_code(401);
         echo json_encode(["error" => "Unauthorized"]);
         exit;
@@ -19,8 +19,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $onlyExtra = $_POST["onlyExtra"];
 
     $foodPrice = $_POST["price"];
-    $restaurantID = $_SESSION['user']['ID'];
-    $sql = "INSERT INTO foods (Name, Description, RestaurantID, OnlyExtra, Price) VALUES ('$foodName', '$foodDescription', $restaurantID , $onlyExtra, $foodPrice)";
+    $restaurantID = $_SESSION['user']['id'];
+    $sql = "INSERT INTO foods (name, description, restaurantid, onlyextra, price) VALUES ('$foodName', '$foodDescription', $restaurantID , $onlyExtra, $foodPrice)";
     $result = mysqli_query($conn, $sql);
     if (!$result) {
         http_response_code(500);

@@ -21,6 +21,7 @@ $PAGE = isset($_GET['page']) ? $_GET['page'] : "home"; //(isset($_SESSION['page'
     <!--ajax jquey-->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
     <!--modal generator -->
+    <script src="./utils/helpers.js"></script>
     <script src="./utils/modalGenerator.js"></script>
     <script src="./utils/searchResultGenerator.js"></script>
     <link rel="stylesheet" href="index.css">
@@ -61,7 +62,12 @@ $PAGE = isset($_GET['page']) ? $_GET['page'] : "home"; //(isset($_SESSION['page'
 
                     </li>
                     <li class="nav-item hover-scale align-items-center justify-content-center d-flex">
-                        <a class="nav-link <?php echo ($PAGE == "home" ? "active fw-bold" : ""); ?>" href="./">Home</a>
+                        <a class="nav-link text-nowrap <?php echo ($PAGE == "home" ? "active fw-bold" : ""); ?>"
+                            href="./">Home</a>
+                    </li>
+                    <li class="nav-item hover-scale align-items-center justify-content-center d-flex">
+                        <a class="nav-link text-nowrap <?php echo ($PAGE == "orderhistory" ? "active fw-bold" : ""); ?>"
+                            href="?page=orderhistory">My📦</a>
                     </li>
                     <li class="nav-item hover-scale text-center align-items-center">
                         <?php
@@ -77,7 +83,8 @@ $PAGE = isset($_GET['page']) ? $_GET['page'] : "home"; //(isset($_SESSION['page'
                             <?php
                         } else {
                             ?>
-                            <a class="nav-link <?= ($PAGE == "profile" ? "active fw-bold" : ""); ?>" href="?page=profile">
+                            <a class="nav-link text-nowrap <?= ($PAGE == "profile" ? "active fw-bold" : ""); ?>"
+                                href="?page=profile">
                                 Login
                             </a>
                             <?php

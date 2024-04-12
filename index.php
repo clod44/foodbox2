@@ -6,10 +6,13 @@ ini_set('display_errors', 1);
 require_once "./utils/db.php";
 require_once "./utils/helpers.php";
 
+savelog("================");
+
+
 require "./modules/header.php";
 
 $pagesDir = "./pages/";
-$PAGE = isset ($_GET['page']) ? $_GET['page'] : 'home';
+$PAGE = isset($_GET['page']) ? $_GET['page'] : 'home';
 $pageFilePath = $pagesDir . $PAGE . ".php";
 
 if (file_exists($pageFilePath))

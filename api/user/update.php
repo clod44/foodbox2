@@ -10,20 +10,21 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
 
     $userid = $_SESSION['user']['id'];
+    $isRestaurant = $_SESSION['user']['usertype'] == 1;
+    $usersTableName = ($isRestaurant ? 'restaurants' : 'users');
     $name = mysqli_real_escape_string($conn, $_POST["name"]);
     $phone = mysqli_real_escape_string($conn, $_POST["phone"]);
 
-    $sql = "SELECT * FROM users WHERE id=$userid";
+    $sql = "SELECT * FROM $usersTableName WHERE id=$userid";
     $result = mysqli_query($conn, $sql);
     if (mysqli_num_rows($result) == 0) {
         http_response_code(401); // Unauthorized
         echo json_encode(["error" => "User not found"]);
         exit;
     }
-    // Update
 
-
-    $sql = "UPDATE users SET name='$name', phone='$phone' WHERE id=$userid";
+    //update data
+    $sql = "UPDATE $usersTableName SET name='$name', phone='$phone' WHERE id=$userid";
     $result = mysqli_query($conn, $sql);
     if (!$result) {
         http_response_code(500); // Internal Server Error

@@ -3,16 +3,16 @@
 require_once "../../utils/db.php";
 require_once "../../utils/helpers.php";
 
-if ($_SERVER["REQUEST_METHOD"] == "GET") {
-    $foodID = $_GET['foodID'];
-    $categories = $_GET['categories'];
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    $foodID = $_POST['foodid'];
+    $categories = $_POST['categories'];
 
     // Clear all categories first:
-    $sqlDelete = "DELETE FROM foodcategories WHERE FoodID=$foodID";
+    $sqlDelete = "DELETE FROM foodcategories WHERE foodid=$foodID";
     $resultDelete = mysqli_query($conn, $sqlDelete);
 
     // Construct the SQL query to insert multiple rows
-    $sqlInsert = "INSERT INTO foodcategories (FoodID, CategoryID) VALUES ";
+    $sqlInsert = "INSERT INTO foodcategories (foodid, categoryid) VALUES ";
     $values = array();
     foreach ($categories as $categoryID) {
         $values[] = "($foodID, $categoryID)";
@@ -23,9 +23,9 @@ if ($_SERVER["REQUEST_METHOD"] == "GET") {
     $resultInsert = mysqli_query($conn, $sqlInsert);
 
     if ($resultDelete && $resultInsert) {
-        echo json_encode(["success" => true]);
+        echo json_encode(["success" => true, "echo" => $_POST]);
     } else {
-        echo json_encode(["error" => "Failed to insert categories"]);
+        echo json_encode(["error" => "Failed to insert categories", "echo" => $_POST]);
     }
 
     exit;

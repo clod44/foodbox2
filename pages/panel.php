@@ -3,7 +3,7 @@ if (!IS_USER_LOGGED_IN()) {
     header("Location: ?page=login");
     exit();
 }
-if ($_SESSION['user']['UserType'] != 1) {
+if ($_SESSION['user']['usertype'] != 1) {
     header("Location: ?page=home");
     exit();
 }

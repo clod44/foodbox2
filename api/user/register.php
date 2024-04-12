@@ -16,7 +16,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         exit;
     }
 
-    $userType = $isRestaurant ? "restaurant" : "customer";
     $tableName = $isRestaurant ? "restaurants" : "users";
 
     $sql = "SELECT * FROM $tableName WHERE username = ?";

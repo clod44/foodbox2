@@ -21,7 +21,7 @@ $selectedfoodid = $_GET['selectedfoodid'] ?? null;
 <div class="container p-4">
     <div class="px-3 d-flex gap-5">
         <img src="./media/sample.jpg" class="rounded shadow" style="height:10rem;">
-        <div class="h-100">
+        <div class="h-100 flex-grow-1">
             <div class="d-flex justify-content-between align-items-center flex-nowrap">
                 <h2 class="fw-bold text-primary m-0">
                     <?= $restaurant['name'] ?>

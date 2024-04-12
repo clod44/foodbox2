@@ -20,7 +20,7 @@ function GenerateSearchResult(data) {
                 <div class='d-flex justify-content-between align-items-center m-0 p-0'>
                     <span class='badge text-bg-warning fw-bold m-0'>
                         $
-                        ${data['foodprice']}
+                        ${parseFloat(data['foodprice']).toFixed(2)}
                     </span>
                     <a href='?page=restaurant&restaurantid=${data['restaurantid']}' class='fs-7 p-0 px-2 m-0 text-end fw-bold'>- ${data['restaurantname']}</a>
                 </div>
