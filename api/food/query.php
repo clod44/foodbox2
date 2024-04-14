@@ -16,10 +16,12 @@ if ($_SERVER["REQUEST_METHOD"] == "GET") {
         restaurants.name as restaurantname
         FROM foods, restaurants " .
         (isset($_GET["categories"]) ? ", foodcategories" : "") .
-        " WHERE foods.restaurantid = restaurants.id";
+        " WHERE foods.restaurantid = restaurants.id" .
+        (isset($_GET["restaurantid"]) ? " AND foods.restaurantid={$_GET['restaurantid']} " : "");
 
     //"AND" conditions 
     $conditions = [];
+    //savelog($sql);
 
     if (isset($_GET['foodid'])) {
         $foodid = $_GET['foodid'];
@@ -53,7 +55,7 @@ if ($_SERVER["REQUEST_METHOD"] == "GET") {
     if (!empty($conditions)) {
         $sql .= " AND (" . implode(" OR ", $conditions) . ")";
     }
-    savelog($sql);
+    //savelog($sql);
 
     // Check if score-min is provided
     //TODO: implement score rating filtering

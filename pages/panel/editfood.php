@@ -1,3 +1,26 @@
+<?php
+
+
+if (isset($_POST['savefood'])) {
+    $foodid = $_POST['foodid'];
+    $name = $_POST['name'];
+    $description = $_POST['description'];
+    $onlyExtra = isset($_POST['onlyExtra']) ? 1 : 0;
+    $visible = isset($_POST['visible']) ? 1 : 0;
+    $price = $_POST['price'];
+
+    $sql = "UPDATE foods SET name = '$name', description = '$description', onlyextra = $onlyExtra, visible = $visible, price = $price WHERE id = $foodid";
+    $result = mysqli_query($conn, $sql);
+    if (!$result) {
+        alert("Error updating food: " . mysqli_error($conn));
+    }
+
+}
+
+
+?>
+
+
 <div class="container">
     <form id="search-food-form">
         <div class=" input-group mb-3 shadow">
@@ -16,7 +39,7 @@
 
     <div id="editing-area" class="d-none rounded border border-primary p-3 py-5">
         <h2 class="text-center get-title">Editing: "Test Burger"</h2>
-        <form>
+        <form action="?page=panel&panel=editfood&foodid=-1" method="post">
             <div class="input-group input-group-sm d-none mb-3">
                 <span class="input-group-text">ID:</span>
                 <input type="text" class="form-control get-foodid" name="foodid" required>
@@ -43,7 +66,7 @@
                 <input type="number" class="form-control" name="price" step="0.01" required>
                 <span class="input-group-text">$</span>
             </div>
-            <button type="submit" class="w-100 btn btn-lg btn-primary hover-scale btn-shadow disabled">Save
+            <button type="submit" name="savefood" class="w-100 btn btn-lg btn-primary hover-scale btn-shadow">Save
                 Changes</button>
         </form>
 
@@ -102,7 +125,8 @@
 
 
         <div class="d-flex flex-column justify-content-center align-items-center">
-            <a href="?page=panel&panel=extras&foodid=12" class="btn btn-lg btn-primary hover-scale btn-shadow">➕ Edit
+            <a id="extras-btn" href="?page=panel&panel=extras&foodid=-1"
+                class="btn btn-lg btn-primary hover-scale btn-shadow">➕ Edit
                 Extras and
                 Options ➕</a>
         </div>
@@ -125,7 +149,7 @@
                 url: './api/food/query.php',
                 type: 'GET',
                 data: {
-                    restaurantID: <?= $_SESSION['user']['id'] ?>,
+                    restaurantid: <?= $_SESSION['user']['id'] ?>,
                     keywords: keywords
                 },
                 dataType: 'json',
@@ -172,15 +196,19 @@
 
         //SELECT A FOOD ======================================================
         $("#search-results").on("click", ".search-result", function () {
-            var foodID = $(this).data("foodid");
+            var foodid = $(this).data("foodid");
+            SelectFood(foodid);
+        })
+        function SelectFood(foodid) {
             //console.log(foodID);
+            $("#extras-btn").attr('href', `?page=panel&panel=extras&foodid=${foodid}`);
 
             //get food details from ajax
             $.ajax({
                 type: "GET",
                 url: "./api/food/query.php",
                 data: {
-                    foodid: foodID
+                    foodid: foodid
                 },
                 //TODO: make all calls dataType:json so you dont have to parse the response
                 dataType: 'json',
@@ -206,13 +234,22 @@
                     alert('An error occurred:\n' + errorMessage);
                 }
             });
-        })
+        }
+        <?php
+        if (isset($_GET['foodid'])) {
+            echo "SelectFood(" . $_GET['foodid'] . ")";
+        }
+        ?>
+
 
         //SHOW A FOOD =============================================================
         function ShowFoodEditing(data) {
+
             $("#editing-area").removeClass("d-none");
             $("#editing-area .get-title").text("Editing: " + data.foodname);
 
+            //find the first form and change its action attribute
+            $('#editing-area').find('form').attr('action', `?page=panel&panel=editfood&foodid=${data.foodid}`);
             $(".get-foodid").val(data.foodid);
             $("#editing-area input[name='name']").val(data.foodname);
             $("#editing-area textarea[name='description']").val(data.fooddescription);
@@ -291,8 +328,10 @@
                     console.log(response);
                     if (response.success) {
                         console.log("Food categories updated");
+                        alert("categories updated");
                     } else {
                         console.log("Error:", response.error);
+                        alert("something went wrong");
                     }
                 },
                 error: function (xhr, status, error) {

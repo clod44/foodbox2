@@ -59,7 +59,7 @@ class ModalInput {
 }
 
 class ModalCheckbox {
-    constructor (label, name, price) {
+    constructor (label, name, value, price) {
         this.label = label;
         this.name = name;
         this.price = price;
@@ -71,7 +71,7 @@ class ModalCheckbox {
     generateHtml() {
         this.html = `
             <div class="mb-3 form-check">
-                <input type="checkbox" class="form-check-input" id="${this.id}" name="${this.name}">
+                <input type="checkbox" class="form-check-input" id="${this.id}" name="${this.name}" value="${this.value}">
                 <label class="form-check-label" for="${this.id}">${this.label}</label>` +
             (this.price > 0 ? `<span class="ms-2 badge text-bg-warning">$${this.price}</span>` : ``) +
             `</div>`;
@@ -175,5 +175,6 @@ $('#openModalBtn').click(function () {
     modal.show();
 });
 
+^this is not up to date
 */
 

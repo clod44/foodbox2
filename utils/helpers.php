@@ -41,4 +41,9 @@ function savelog($message)
     file_put_contents($logFile, $logEntry, FILE_APPEND);
 }
 
+function alert($message)
+{
+    echo '<script type="text/javascript">alert("' . $message . '");</script>';
+}
+
 ?>

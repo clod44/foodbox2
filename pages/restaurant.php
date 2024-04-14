@@ -196,27 +196,90 @@ $selectedfoodid = $_GET['selectedfoodid'] ?? null;
                     alert('query failed:\n' + errorMessage);
                 }
             });
-
         }
 
         function ShowFoodModalFromFood(data) { //foodAndRestaurantDetail
-            // Example data for the modal content
+            $.ajax({
+                type: "GET",
+                url: "./api/food/getquestions.php",
+                data: {
+                    foodid: data['foodid']
+                },
+                dataType: 'json',
+                success: function (response) {
+                    console.log(response);
+                    if (response.success) {
+                        console.log("Questions retrieved");
+                        CreateFoodModalFromAllData(data, response.questions, response.answers);
+                    } else {
+                        console.log("Error:", response.error);
+                    }
+                },
+                error: function (xhr, status, error) {
+                    var errorMessage = xhr.responseText ? JSON.parse(xhr.responseText).error : 'Unknown error';
+                    console.log(errorMessage); // Log the error message to the console
+                    alert('query failed:\n' + errorMessage);
+                }
+            });
+
+        }
+        function CreateFoodModalFromAllData(data, questions, answers) {
+            //data is foodAndRestaurantDetail
             const modalData = [
                 new ModalImage("./media/sample.jpg"),
                 new ModalTitle(data['foodname']),
                 new ModalLabel(data['fooddescription']),
+                /*
                 new ModalInput("biggest wish:", "mywish1"),
                 new ModalInput("best wish:", "mywish2"),
                 new ModalTitle("Drink?:"),
                 new ModalRadio("CocaCola", "drink", 1, 10, true),
                 new ModalRadio("Pepsi", "drink", 2, 15, true),
                 new ModalTitle("Extras?:"),
-                new ModalCheckbox("Tomato", "extras", 12),
-                new ModalCheckbox("Salad", "extras", 0),
-                new ModalCheckbox("Melon", "extras", 5),
+                new ModalCheckbox("Tomato", "extras", "tomato", 12),
+                new ModalCheckbox("Salad", "extras", "salad", 0),
+                new ModalCheckbox("Melon", "extras", "melon", 5),
                 new ModalTitle("Final:"),
-                new ModalCheckbox("Agree to terms", "terms", 0),
+                new ModalCheckbox("Agree to terms", "terms", "1", 0),
+            */
             ];
+
+            questions.forEach(function (question, index, array) {
+                modalData.push(new ModalTitle(question['title']));
+                modalData.push(new ModalLabel(question['text']));
+                let type = question['type'];
+                console.log(answers);
+                /*
+                I keep forgeting so here is a reminder.
+                "answers" is an object containing few arrays that contains multiple answer datas, keyed by the questionid's
+                answers = {
+                    "1": [
+                        {id: 1, text: "somethnig", price: 10}, //answers of questionid=1
+                        {id: 2, text: "somethnig", price: 10} 
+                    ]
+                }
+                */
+                answers[question['id']].forEach(function (answer, index, array) {
+                    switch (type) {
+                        case "1": //checkbox
+                            modalData.push(new ModalCheckbox(answer['text'], "answers_" + answer['questionid'] + "[]", "something", answer['price']));
+                            break;
+                        case "2": //radio
+                            modalData.push(new ModalRadio(answer['text'], "drink", 1, answer['price'], true));
+                            break;
+                        /*
+                        //we will screw off the text input as it requires db modification and i dont really care this tbh
+                        case "3": //input
+                            modalData.push(new ModalRadio(answer['text'], "drink", 1, answer['price'], true));
+                            break;
+                        */
+                        default:
+                            modalData.push(new ModalLabel("Not implemented answer type: " + type));
+                            break;
+                    }
+                });
+
+            });
 
             // Create an instance of ModalCreator
             const modal = new ModalCreator("Viewing: " + data['foodname'], modalData, "Add to Cart");
