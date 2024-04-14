@@ -1,6 +1,4 @@
 <?php
-
-
 function UPDATE_SESSION_USER()
 {
     if (!isset($_SESSION['user'])) {
@@ -45,5 +43,70 @@ function alert($message)
 {
     echo '<script type="text/javascript">alert("' . $message . '");</script>';
 }
+
+function GET_IMAGE($image)
+{
+    if ($image == null) {
+        $imagePath = '.' . DIRECTORY_SEPARATOR . 'media' . DIRECTORY_SEPARATOR . 'notfound.jpg';
+        return $imagePath;
+    }
+    $imagePath = '.' . DIRECTORY_SEPARATOR . 'media' . DIRECTORY_SEPARATOR . $image;
+    //check if file exists
+    if (!file_exists($imagePath)) {
+        $imagePath = '.' . DIRECTORY_SEPARATOR . 'media' . DIRECTORY_SEPARATOR . 'notfound.jpg';
+    }
+    return $imagePath;
+}
+
+function UPLOAD_IMAGE($uploadedFileName, $newFileNamePrefix, $callback)
+{
+    $target_dir = "./media/";
+
+    $uniqueId = uniqid($newFileNamePrefix, false);
+    $fileExtension = pathinfo($uploadedFileName, PATHINFO_EXTENSION);
+    $newFileName = $uniqueId . "." . $fileExtension;
+    $target_file = $target_dir . $newFileName;
+
+    $uploadOk = 1;
+    $imageFileType = strtolower(pathinfo($target_file, PATHINFO_EXTENSION));
+
+    $check = getimagesize($_FILES["file"]["tmp_name"]);
+    if ($check !== false) {
+        echo "File is an image - " . $check["mime"] . ".";
+        $uploadOk = 1;
+    } else {
+        echo "File is not an image.";
+        $uploadOk = 0;
+    }
+    if (file_exists($target_file)) {
+        echo "Sorry, file already exists. try again.";
+        $uploadOk = 0;
+    }
+    if ($_FILES["file"]["size"] > 500000) {
+        echo "Sorry, your file is too large.";
+        $uploadOk = 0;
+    }
+    if (
+        $imageFileType != "jpg" && $imageFileType != "png" && $imageFileType != "jpeg"
+        && $imageFileType != "gif"
+    ) {
+        echo "Sorry, only JPG, JPEG, PNG & GIF files are allowed.";
+        $uploadOk = 0;
+    }
+    if ($uploadOk == 0) {
+        echo "Sorry, your file was not uploaded.";
+    } else {
+        if (move_uploaded_file($_FILES["file"]["tmp_name"], $target_file)) {
+            echo "The file " . htmlspecialchars(basename($_FILES["file"]["name"])) . " has been uploaded.";
+
+            // Invoke the callback function with necessary arguments
+            $callback($newFileName, $target_dir);
+
+        } else {
+            echo "Sorry, there was an error uploading your file.";
+        }
+    }
+}
+
 
 ?>

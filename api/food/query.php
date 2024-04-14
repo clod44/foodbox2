@@ -12,6 +12,7 @@ if ($_SERVER["REQUEST_METHOD"] == "GET") {
         foods.price as foodprice,
         foods.onlyextra as foodonlyextra,
         foods.visible as foodvisible,
+        foods.image as foodimage,
         restaurants.id as restaurantid,
         restaurants.name as restaurantname
         FROM foods, restaurants " .

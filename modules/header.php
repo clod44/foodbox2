@@ -78,7 +78,8 @@ $PAGE = isset($_GET['page']) ? $_GET['page'] : "home"; //(isset($_SESSION['page'
                                 <p class="m-0 p-0 fs-6 <?= ($PAGE == "profile" ? "active fw-bold" : ""); ?>">
                                     <?= $_SESSION['user']['username'] ?>
                                 </p>
-                                <img src="./media/sample.jpg" class="rounded-pill shadow" style="height:2em;">
+                                <img src="<?= GET_IMAGE($_SESSION['user']['image']) ?>" class="rounded-circle shadow"
+                                    style="height:2em;width:2em;object-fit:cover;">
                             </a>
                             <?php
                         } else {

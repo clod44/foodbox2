@@ -18,6 +18,26 @@ if (isset($_POST['savefood'])) {
 }
 
 
+if (isset($_POST['food-image-upload'])) {
+    $uploadedFileName = $_FILES["file"]["name"];
+    $foodid = $_POST['food-image-upload'];
+
+    // Define the callback function logic
+    $updateProfilePicture = function ($newFileName, $target_dir) {
+        global $conn, $foodid;
+        $sql = "UPDATE foods SET image='$newFileName' WHERE id=$foodid";
+        $result = mysqli_query($conn, $sql);
+        if (!$result) {
+            alert("Error updating food image: " . mysqli_error($conn));
+        }
+    };
+
+    UPLOAD_IMAGE($uploadedFileName, "food_", $updateProfilePicture);
+
+
+
+}
+
 ?>
 
 
@@ -74,16 +94,16 @@ if (isset($_POST['savefood'])) {
 
         <div class="d-flex flex-column justify-content-center align-items-center">
             <h2>Change Picture</h2>
-            <form class="text-center">
-                <img src="./media/sample.jpg" class="rounded shadow" style="height:15rem;">
-
-                <div class="input-group input-group-sm d-none mb-3">
-                    <span class="input-group-text">ID:</span>
-                    <input type="text" class="form-control get-foodid" name="foodid" readonly>
+            <form id="food-image-upload-form" method="post" enctype="multipart/form-data">
+                <img class="w-100 rounded mb-2 shadow border border-primary" src="<?= GET_IMAGE("sample.jpg") ?>"
+                    style="object-fit:cover;">
+                <div class="small font-italic text-muted mb-4">JPG or PNG no larger than 5 MB</div>
+                <div class="input-group mb-3 border border-primary">
+                    <input class="form-control form-control-lg file-input" type="file" accept=".jpg, .jpeg, .png"
+                        name="file">
+                    <button name="food-image-upload" value="-1" class="btn btn-outline-primary"
+                        type="submit">Upload</button>
                 </div>
-
-                <span class="fs-7 text-center text-muted d-block my-2">Uploaded Picture takes immediate change.</span>
-                <button class="btn btn-lg btn-primary hover-scale btn-shadow disabled">Upload New Picture</button>
             </form>
         </div>
 
@@ -254,7 +274,9 @@ if (isset($_POST['savefood'])) {
             $("#editing-area input[name='name']").val(data.foodname);
             $("#editing-area textarea[name='description']").val(data.fooddescription);
             $("#editing-area input[name='price']").val(data.foodprice);
-
+            $('#food-image-upload-form').find("button").val(data.foodid);
+            $('#food-image-upload-form').find("img").attr("src", GET_IMAGE(data.foodimage));
+            console.log(GET_IMAGE(data.foodimage));
             var onlyExtra = data.foodonlyextra == 1 ? true : false;
             var visible = data.foodvisible == 1 ? true : false;
             $("#editing-area input[name='onlyExtra']").prop("checked", onlyExtra);
@@ -342,7 +364,30 @@ if (isset($_POST['savefood'])) {
             });
         })
 
+        //FOOD IMAGE UPLOAD =============================================================
+        $('#food-image-upload-form').on('change', '.file-input', function () {
+            // Get selected file
+            const file = this.files[0];
 
+            // Find the preview image within the same form
+            const form = $(this).closest('form');
+            const previewImage = form.find('img');
+
+            // Check if file is selected and is an image
+            if (file && file.type.startsWith('image')) {
+                // Create a FileReader instance
+                const reader = new FileReader();
+
+                // Set onload event handler
+                reader.onload = function (e) {
+                    // Update the src attribute of the preview image to the loaded image data
+                    previewImage.attr('src', e.target.result);
+                };
+
+                // Read the selected file as Data URL (base64 string)
+                reader.readAsDataURL(file);
+            }
+        });
     });
 
 
