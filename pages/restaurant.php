@@ -13,6 +13,22 @@ if (mysqli_num_rows($result) == 0) {
 }
 $restaurant = mysqli_fetch_assoc($result);
 
+if (isset($_POST['favorite-restaurant'])) {
+    //check if we already favorited, if yes, remove it
+    //if no, add it
+    $restaurantid_ = $_POST['favorite-restaurant'];
+    $sql = "SELECT * FROM favoriterestaurants WHERE userid={$_SESSION['user']['id']} AND restaurantid=$restaurantid_";
+    $result = mysqli_query($conn, $sql);
+    if (mysqli_num_rows($result) > 0) {
+        $sql = "DELETE FROM favoriterestaurants WHERE userid={$_SESSION['user']['id']} AND restaurantid=$restaurantid_";
+        $result = mysqli_query($conn, $sql);
+    } else {
+        $sql = "INSERT INTO favoriterestaurants (userid, restaurantid) VALUES({$_SESSION['user']['id']}, $restaurantid_)";
+        $result = mysqli_query($conn, $sql);
+    }
+}
+
+
 //optional
 $selectedfoodid = $_GET['selectedfoodid'] ?? null;
 ?>
@@ -20,24 +36,77 @@ $selectedfoodid = $_GET['selectedfoodid'] ?? null;
 
 <div class="container p-4">
     <div class="px-3 d-flex gap-5">
-        <img src="./media/sample.jpg" class="rounded shadow" style="height:10rem;">
+        <img src="<?= GET_IMAGE($restaurant['image']) ?>" class="rounded shadow"
+            style="height:10rem;width:10rem;object-fit:cover;">
         <div class="h-100 flex-grow-1">
             <div class="d-flex justify-content-between align-items-center flex-nowrap">
                 <h2 class="fw-bold text-primary m-0">
                     <?= $restaurant['name'] ?>
                 </h2>
                 <!--favorite button-->
-
-                <div class="btn-group btn-group-sm" role="group" aria-label="Small button group">
-                    <input type="checkbox" class="btn-check" id="btncheck1" autocomplete="off">
-                    <label class="btn btn-outline-primary pb-1" for="btncheck1"><i class="bi bi-heart fs-3"></i></label>
-                </div>
+                <?php
+                $isRestaurant = $_SESSION['user']['usertype'] == 1;
+                if (!$isRestaurant) {
+                    //check if we favorited
+                    $sql = "SELECT * FROM favoriterestaurants WHERE userid={$_SESSION['user']['id']} AND restaurantid=$restaurantid";
+                    $result = mysqli_query($conn, $sql);
+                    if (mysqli_num_rows($result) > 0) {
+                        $favorited = "";
+                    } else {
+                        $favorited = "outline-";
+                    }
+                    ?>
+                    <form method="POST">
+                        <button class="btn btn-lg btn-<?= $favorited ?>primary btn-shadow p-2 m-2 px-4"
+                            name="favorite-restaurant" value="<?= $restaurant['id'] ?>" type="submit">
+                            <i class=" bi bi-heart fs-3"></i>
+                        </button>
+                    </form>
+                    <?php
+                } ?>
 
             </div>
             <p class="lead fs-6">
                 <?= $restaurant['description'] ?>
             </p>
             <p class="fw-bold">4.2/5⭐(+3000)</p>
+            <div class="accordion accordion-flush p-1 m-0" id="accordionFlushExample">
+                <div class="accordion-item">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button collapsed p-0 m-0 text-primary" type="button"
+                            data-bs-toggle="collapse" data-bs-target="#flush-collapseOne" aria-expanded="false"
+                            aria-controls="flush-collapseOne">
+                            Comments
+                        </button>
+                    </h2>
+                    <div id="flush-collapseOne" class="accordion-collapse collapse"
+                        data-bs-parent="#accordionFlushExample">
+                        <div class="accordion-body">
+                            <div class="p-3 rounded border border-primary d-flex flex-column gap-3"
+                                style="height:15rem;overflow-x:hidden; overflow-y:auto;">
+                                <?php
+                                for ($i = 0; $i < 15; $i++) {
+                                    ?>
+                                    <div class="d-flex flex-column">
+                                        <div class="d-flex justify-content-between">
+                                            <span class="fw-bold">Name Surname <span>- <?= date("d/m/Y"); ?></span></span>
+                                            <span>⭐⭐⭐⭐</span>
+                                        </div>
+                                        <span>Lorem ipsum, dolor sit amet consectetur adipisicing elit. Exercitationem,
+                                            quidem.</span>
+                                        <div class="d-flex justify-content-end">
+                                            <span>- <a href="#" class="fst-italic">Lorem, ipsum.</a></span>
+                                        </div>
+                                    </div>
+                                    <hr>
+                                    <?php
+                                }
+                                ?>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -64,7 +133,7 @@ $selectedfoodid = $_GET['selectedfoodid'] ?? null;
                     <h3 class="mb-3">🍔 Menu
                         <?= $i ?>
                     </h3>
-                    <div class="row align-items-start justify-content-around">
+                    <div class="row align-items-start justify-content-around rounded p-2">
                         <?php
                         //for now, keep fetching all the foods
                         $sql = "SELECT * FROM foods WHERE restaurantid=$restaurantid AND onlyextra=0";
@@ -75,7 +144,7 @@ $selectedfoodid = $_GET['selectedfoodid'] ?? null;
                             <div class="col-12 col-md-6 p-2">
                                 <!--clickable-->
                                 <div data-food-id="<?= $food['id'] ?>"
-                                    class="food hover-scale m-0 p-3 border border-primary rounded shadow overflow-hidden"
+                                    class="food hover-scale m-0 p-3 border border-primary text-bg-light border-2 rounded shadow overflow-hidden"
                                     style="cursor:pointer;">
                                     <div class="d-flex align-items-center justify-content-between w-100 h-100 m-0 p-0">
                                         <div class="d-flex flex-column align-items-start justify-content-between m-0 p-0">
@@ -89,7 +158,8 @@ $selectedfoodid = $_GET['selectedfoodid'] ?? null;
                                                 <?= $food['price'] ?>$
                                             </span>
                                         </div>
-                                        <img src="./media/sample.jpg" class="rounded" style="width:5rem;">
+                                        <img src="<?= GET_IMAGE($food['image']) ?>" class="rounded"
+                                            style="width:5rem;height:5rem;object-fit:cover;">
                                     </div>
 
                                 </div>
@@ -105,7 +175,7 @@ $selectedfoodid = $_GET['selectedfoodid'] ?? null;
         </div>
         <!--your food box-->
         <div class="col-4 m-0 p-0">
-            <div class="w-100 border border-primary rounded shadow p-4">
+            <div class="ms-3 flex-grow-1 border border-primary rounded shadow p-4">
                 <h3 class="m-0 p-0 text-center mb-2">📦 Your Box 📦</h3>
                 <hr class="p-0 m-2 border-primary">
                 <div class="rounded w-100 mb-2" style="height:20rem;overflow-x:hidden; overflow-y:auto;">
@@ -175,19 +245,14 @@ $selectedfoodid = $_GET['selectedfoodid'] ?? null;
                 success: function (response) {
                     console.log(response);
                     if (response.success) {
-                        console.log("Food retrieved");
-                        //console.log(response);
-                        var foodsAndRestaurantDetails = response.foodAndRestaurantDetails;
-                        if (Array.isArray(foodsAndRestaurantDetails)) {
-                            foodsAndRestaurantDetails.forEach(function (foodAndRestaurantDetail) {
-                                //console.log(foodAndRestaurantDetail); // Log each element to understand its structure
-                                ShowFoodModalFromFood(foodAndRestaurantDetail);
+                        let foods = response.foods;
+                        if (Array.isArray(foods)) {
+                            foods.forEach(function (food) {
+                                ShowFoodModalFromFood(food);
                             });
                         } else {
-                            console.log("foodsAndRestaurantDetails is not an array:", foodsAndRestaurantDetails);
+                            console.log("Error:", response.error);
                         }
-                    } else {
-                        console.log("Error:", response.error);
                     }
                 },
                 error: function (xhr, status, error) {
@@ -197,20 +262,18 @@ $selectedfoodid = $_GET['selectedfoodid'] ?? null;
                 }
             });
         }
-
-        function ShowFoodModalFromFood(data) { //foodAndRestaurantDetail
+        function ShowFoodModalFromFood(food) { //foodAndRestaurantDetail
             $.ajax({
                 type: "GET",
                 url: "./api/food/getquestions.php",
                 data: {
-                    foodid: data['foodid']
+                    foodid: food['id']
                 },
                 dataType: 'json',
                 success: function (response) {
                     console.log(response);
                     if (response.success) {
-                        console.log("Questions retrieved");
-                        CreateFoodModalFromAllData(data, response.questions, response.answers);
+                        CreateFoodModalFromAllData(food, response.questions, response.answers);
                     } else {
                         console.log("Error:", response.error);
                     }
@@ -223,12 +286,12 @@ $selectedfoodid = $_GET['selectedfoodid'] ?? null;
             });
 
         }
-        function CreateFoodModalFromAllData(data, questions, answers) {
+        function CreateFoodModalFromAllData(food, questions, answers) {
             //data is foodAndRestaurantDetail
             const modalData = [
-                new ModalImage("./media/sample.jpg"),
-                new ModalTitle(data['foodname']),
-                new ModalLabel(data['fooddescription']),
+                new ModalImage(GET_IMAGE(food['image'])),
+                new ModalTitle(food['name']),
+                new ModalLabel(food['description']),
                 /*
                 new ModalInput("biggest wish:", "mywish1"),
                 new ModalInput("best wish:", "mywish2"),
@@ -282,8 +345,7 @@ $selectedfoodid = $_GET['selectedfoodid'] ?? null;
             });
 
             // Create an instance of ModalCreator
-            const modal = new ModalCreator("Viewing: " + data['foodname'], modalData, "Add to Cart");
-            console.log("asd");
+            const modal = new ModalCreator("Viewing: " + food['name'], modalData, "Add to Cart");
             // Show the modal
             modal.show();
         }

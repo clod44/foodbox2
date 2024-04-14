@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost:3306
--- Generation Time: Apr 14, 2024 at 12:48 PM
+-- Generation Time: Apr 14, 2024 at 11:19 PM
 -- Server version: 8.0.30
 -- PHP Version: 8.1.10
 
@@ -29,12 +29,26 @@ SET time_zone = "+00:00";
 
 CREATE TABLE `addresses` (
   `id` int NOT NULL,
-  `userid` int DEFAULT NULL,
-  `streetid` int DEFAULT NULL,
-  `districtid` int DEFAULT NULL,
-  `cityid` int DEFAULT NULL,
-  `active` tinyint(1) DEFAULT NULL
+  `userid` int NOT NULL DEFAULT '-1',
+  `name` varchar(60) COLLATE utf8mb4_turkish_ci NOT NULL DEFAULT 'my address',
+  `streetid` int NOT NULL DEFAULT '-1',
+  `districtid` int NOT NULL DEFAULT '-1',
+  `cityid` int NOT NULL DEFAULT '-1',
+  `active` tinyint(1) DEFAULT '1'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_turkish_ci;
+
+--
+-- Dumping data for table `addresses`
+--
+
+INSERT INTO `addresses` (`id`, `userid`, `name`, `streetid`, `districtid`, `cityid`, `active`) VALUES
+(1, -1, 'my address', 12, 4, 2, NULL),
+(2, -1, 'work', 15, 5, 2, 1),
+(3, -1, 'king', 27, 9, 3, 1),
+(4, 1, 'home', 1, 1, 1, 1),
+(5, 1, 'work', 14, 5, 2, 1),
+(6, 1, 'mama', 20, 7, 3, 1),
+(8, -1, 'merkez', 10, 4, 2, 1);
 
 -- --------------------------------------------------------
 
@@ -59,7 +73,19 @@ CREATE TABLE `answers` (
 INSERT INTO `answers` (`id`, `questionid`, `foodid`, `text`, `price`, `orderval`, `active`) VALUES
 (11, 3, -1, 'AAA', 0, 0, 1),
 (12, 3, -1, 'GGGGG', 99, -3, 1),
-(13, 3, 9, 'CCCCC', 15, 4, 1);
+(13, 3, 9, 'CCCCC', 15, 4, 1),
+(17, 4, -1, 'evet', 0, 0, 1),
+(18, 4, -1, 'hayır', 0, 0, 1),
+(25, 5, -1, '+1 kanat', 0.2, 0, 1),
+(26, 5, -1, '+5 kanat', 1.8, 0, 1),
+(27, 5, -1, '+10', 4, 0, 1),
+(31, 6, -1, 'Kola', 2, 0, 1),
+(32, 6, -1, 'şişe su', 0, 0, 1),
+(34, 7, -1, 'Kabul ediyorum', 0, 0, 1),
+(35, 8, -1, 'Example text', 0, 0, 1),
+(42, 9, -1, 'istemiyorum', 0, 0, 1),
+(43, 9, -1, '2', 0.5, 0, 1),
+(44, 9, -1, '5', 2, 0, 1);
 
 -- --------------------------------------------------------
 
@@ -176,6 +202,25 @@ INSERT INTO `districts` (`id`, `name`, `cityid`, `active`) VALUES
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `favoriterestaurants`
+--
+
+CREATE TABLE `favoriterestaurants` (
+  `id` int NOT NULL,
+  `userid` int NOT NULL,
+  `restaurantid` int NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_turkish_ci;
+
+--
+-- Dumping data for table `favoriterestaurants`
+--
+
+INSERT INTO `favoriterestaurants` (`id`, `userid`, `restaurantid`) VALUES
+(2, 1, 2);
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `favorites`
 --
 
@@ -213,7 +258,12 @@ INSERT INTO `foodcategories` (`id`, `foodid`, `categoryid`, `active`) VALUES
 (14, 9, 5, 1),
 (15, 9, 6, 1),
 (16, 9, 7, 1),
-(17, 9, 13, 1);
+(17, 9, 13, 1),
+(21, 11, 1, 1),
+(22, 11, 4, 1),
+(23, 11, 28, 1),
+(24, 11, 29, 1),
+(25, 10, 21, 1);
 
 -- --------------------------------------------------------
 
@@ -228,6 +278,7 @@ CREATE TABLE `foods` (
   `restaurantid` int NOT NULL,
   `onlyextra` tinyint(1) NOT NULL,
   `price` float NOT NULL,
+  `image` varchar(200) COLLATE utf8mb4_turkish_ci DEFAULT NULL,
   `visible` tinyint(1) NOT NULL DEFAULT '1',
   `active` tinyint(1) NOT NULL DEFAULT '1'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_turkish_ci;
@@ -236,16 +287,18 @@ CREATE TABLE `foods` (
 -- Dumping data for table `foods`
 --
 
-INSERT INTO `foods` (`id`, `name`, `description`, `restaurantid`, `onlyextra`, `price`, `visible`, `active`) VALUES
-(1, 'aaaaa', 'bbbbb', 1, 1, 99, 1, 1),
-(2, 'Test Burger', 'yummy en leziz burger bu', 1, 0, 14.99, 1, 1),
-(3, 'Kral Kebab', 'OOOF ATEŞ GIBI', 1, 0, 29.99, 1, 1),
-(4, 'Ejderha Döner', 'Çok acılıdır dikkat!', 1, 0, 6.75, 1, 1),
-(5, '1L Su', 'lıkır lıkır', 1, 0, 0.55, 1, 1),
-(6, 'Dondurma', 'çok soğuktur dikkat!', 1, 0, 2.99, 1, 1),
-(7, 'Pepsi (500ml)', 'yaşatır seni', 1, 0, 2.99, 1, 1),
-(8, 'Balık ekmek', '100gr balık ile yapılır', 1, 0, 6.3, 1, 1),
-(9, 'Tavuk Kasa', '1 kasa dolu tavuk', 2, 0, 17.3, 1, 1);
+INSERT INTO `foods` (`id`, `name`, `description`, `restaurantid`, `onlyextra`, `price`, `image`, `visible`, `active`) VALUES
+(1, 'aaaaa', 'bbbbb', 1, 1, 99, NULL, 1, 1),
+(2, 'Test Burger', 'yummy en leziz burger bu', 1, 0, 14.99, NULL, 1, 1),
+(3, 'Kral Kebab', 'OOOF ATEŞ GIBI', 1, 0, 29.99, NULL, 1, 1),
+(4, 'Ejderha Döner', 'Çok acılıdır dikkat!', 1, 0, 6.75, NULL, 1, 1),
+(5, '1L Su', 'lıkır lıkır', 1, 0, 0.55, NULL, 1, 1),
+(6, 'Dondurma', 'çok soğuktur dikkat!', 1, 0, 2.99, NULL, 1, 1),
+(7, 'Pepsi (500ml)', 'yaşatır seni', 1, 0, 2.99, NULL, 1, 1),
+(8, 'Balık ekmek', '100gr balık ile yapılır', 1, 0, 6.3, NULL, 1, 1),
+(9, 'Tavuk Kasa', '1 kasa dolu tavuk', 2, 0, 17.3, 'food_661c3a5ebe7e0.jpeg', 1, 1),
+(10, '10 Litre Kola (Paket, Büyük)', 'doya doya için sağlığa yararlı!!!!!!!!!', 2, 0, 49, 'food_661c39de79abd.jpg', 1, 1),
+(11, 'Baharatlı Kanat', 'kanatlarrrr loremroekroekroelroerloellll', 2, 0, 23.4, 'food_661c3ac7e1dee.jpg', 0, 1);
 
 -- --------------------------------------------------------
 
@@ -352,7 +405,12 @@ CREATE TABLE `questions` (
 --
 
 INSERT INTO `questions` (`id`, `foodid`, `title`, `text`, `required`, `type`, `active`) VALUES
-(3, 9, 'Yanında soğuk soğuk...', 'içeceklerden en az birini seçin.', 1, 1, 1);
+(3, 9, 'Yanında soğuk soğuk...', 'içeceklerden en az birini seçin.', 1, 1, 1),
+(4, 9, 'Fiş ister misiniz?', 'doğayı korumak için \"hayır\" seçeneğini seçin.', 1, 2, 1),
+(5, 11, 'Extra Kanat', 'almak zorundasin', 1, 2, 1),
+(6, 11, 'Extra içecekler?', 'tatlandırıc içerir', 0, 1, 1),
+(7, 11, 'Gizlilik hakları', 'kabul etmek zorunlu', 1, 2, 1),
+(9, 10, 'plastik bardak?', 'Kaç tane istersiniz?', 0, 1, 1);
 
 -- --------------------------------------------------------
 
@@ -367,8 +425,9 @@ CREATE TABLE `restaurants` (
   `email` varchar(60) CHARACTER SET utf8mb4 COLLATE utf8mb4_turkish_ci DEFAULT NULL,
   `phone` varchar(15) CHARACTER SET utf8mb4 COLLATE utf8mb4_turkish_ci DEFAULT NULL,
   `password` varchar(60) CHARACTER SET utf8mb4 COLLATE utf8mb4_turkish_ci DEFAULT NULL,
-  `addressID` int DEFAULT NULL,
+  `addressid` int DEFAULT '-1',
   `description` varchar(180) COLLATE utf8mb4_turkish_ci NOT NULL DEFAULT 'default description',
+  `image` varchar(200) CHARACTER SET utf8mb4 COLLATE utf8mb4_turkish_ci DEFAULT 'restaurant.png',
   `usertype` int NOT NULL DEFAULT '1',
   `active` tinyint(1) DEFAULT '1'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_turkish_ci;
@@ -377,9 +436,9 @@ CREATE TABLE `restaurants` (
 -- Dumping data for table `restaurants`
 --
 
-INSERT INTO `restaurants` (`id`, `username`, `name`, `email`, `phone`, `password`, `addressID`, `description`, `usertype`, `active`) VALUES
-(1, 'mcdonalds', 'McDonalds', 'mcdonalds@gmail.com', '2222', '123', NULL, 'default description', 1, NULL),
-(2, 'kfc', 'KFC', 'kfc@gmail.com', '999999999999', '123', NULL, 'default description', 1, 1);
+INSERT INTO `restaurants` (`id`, `username`, `name`, `email`, `phone`, `password`, `addressid`, `description`, `image`, `usertype`, `active`) VALUES
+(1, 'mcdonalds', 'McDonalds', 'mcdonalds@gmail.com', '2222', '123', NULL, 'default description', 'restaurant.png', 1, NULL),
+(2, 'kfc', 'KFC', 'kfc@gmail.com', '999999999999', '123', 8, 'default description', 'pfp_661c37bf83fbd.jpg', 1, 1);
 
 -- --------------------------------------------------------
 
@@ -442,6 +501,7 @@ CREATE TABLE `users` (
   `password` varchar(60) CHARACTER SET utf8mb4 COLLATE utf8mb4_turkish_ci DEFAULT NULL,
   `restaurantid` int DEFAULT NULL,
   `addressid` int DEFAULT NULL,
+  `image` varchar(200) CHARACTER SET utf8mb4 COLLATE utf8mb4_turkish_ci DEFAULT 'user.png',
   `usertype` int NOT NULL DEFAULT '0',
   `active` tinyint(1) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_turkish_ci;
@@ -450,8 +510,8 @@ CREATE TABLE `users` (
 -- Dumping data for table `users`
 --
 
-INSERT INTO `users` (`id`, `username`, `name`, `email`, `phone`, `password`, `restaurantid`, `addressid`, `usertype`, `active`) VALUES
-(1, 'aga', 'McDonalds', 'aga@gmail.com', '2222', '123', NULL, NULL, 0, NULL);
+INSERT INTO `users` (`id`, `username`, `name`, `email`, `phone`, `password`, `restaurantid`, `addressid`, `image`, `usertype`, `active`) VALUES
+(1, 'aga', 'McDonalds', 'aga@gmail.com', '2222', '123', NULL, NULL, 'pfp_661c31d4ca382.jpg', 0, NULL);
 
 --
 -- Indexes for dumped tables
@@ -491,6 +551,12 @@ ALTER TABLE `comments`
 -- Indexes for table `districts`
 --
 ALTER TABLE `districts`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `favoriterestaurants`
+--
+ALTER TABLE `favoriterestaurants`
   ADD PRIMARY KEY (`id`);
 
 --
@@ -579,13 +645,13 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT for table `addresses`
 --
 ALTER TABLE `addresses`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- AUTO_INCREMENT for table `answers`
 --
 ALTER TABLE `answers`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=45;
 
 --
 -- AUTO_INCREMENT for table `categories`
@@ -612,6 +678,12 @@ ALTER TABLE `districts`
   MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
 
 --
+-- AUTO_INCREMENT for table `favoriterestaurants`
+--
+ALTER TABLE `favoriterestaurants`
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+
+--
 -- AUTO_INCREMENT for table `favorites`
 --
 ALTER TABLE `favorites`
@@ -621,13 +693,13 @@ ALTER TABLE `favorites`
 -- AUTO_INCREMENT for table `foodcategories`
 --
 ALTER TABLE `foodcategories`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=26;
 
 --
 -- AUTO_INCREMENT for table `foods`
 --
 ALTER TABLE `foods`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
 
 --
 -- AUTO_INCREMENT for table `menufoods`
@@ -669,7 +741,7 @@ ALTER TABLE `questionanswers`
 -- AUTO_INCREMENT for table `questions`
 --
 ALTER TABLE `questions`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
 
 --
 -- AUTO_INCREMENT for table `restaurants`

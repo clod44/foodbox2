@@ -177,22 +177,31 @@ if (isset($_POST['food-image-upload'])) {
                     $("#search-results").empty();
                     //console.log(response);
                     if (response.success) {
-                        var foodAndRestaurantDetails = response.foodAndRestaurantDetails;
-                        if (Array.isArray(foodAndRestaurantDetails)) {
-                            foodAndRestaurantDetails.forEach(function (data) {
+                        let foods = response.foods;
+                        if (Array.isArray(foods)) {
+                            foods.forEach(function (food) {
                                 $("#search-results").append(`         
-                                <button data-foodid="${data.foodid}" class="search-result btn btn-outline-primary hover-scale shadow p-2 w-100">
+                                <button data-foodid="${food['id']}" class="search-result btn btn-outline-primary hover-scale shadow p-2 w-100">
                                     <div class="d-flex justify-content-start gap-2">
-                                        <img src="./media/sample.jpg" class="rounded" style="height:3rem;">
-                                        <span>${data.foodid} - ${data.foodname}</span>
+                                        <img src="${GET_IMAGE(food['image'])}" class="rounded" style="height:4rem;width:4rem;object-fit:cover;">
+                                        <div class="d-flex flex-column flex-grow-1 text-start">
+                                            <div class="d-flex justify-content-between">
+                                                <span class="fw-bold text-bg-primary rounded px-3">${food['id']} - ${food['name']}</span>
+                                                <span>
+                                                    <span class="badge text-bg-warning fw-bold fs-6">${food['price']}$</span>
+                                                </span>
+                                                </div>
+                                            <span class="px-2">${food['description']}</span>
+                                        </div>
+                                        
                                     </div>
                                 </button>
                             `);
 
                             });
                         } else {
-                            $("#search-results").append("<p class='text-center'>there was an error filtering your foods</p>");
-                            console.log("foodsAndRestaurantDetails is not an array:", foodAndRestaurantDetails);
+                            $("#search-results").append("<p class='text-center'>there was an error filtering your foods. no food found.</p>");
+                            console.log("foodsAndRestaurantDetails is not an array:", foods);
                         }
                     } else {
                         $("#search-results").append("<p class='text-center'>there was an error filtering your foods</p>");
@@ -235,14 +244,11 @@ if (isset($_POST['food-image-upload'])) {
                 success: function (response) {
                     //console.log(response);
                     if (response.success) {
-                        var foodsAndRestaurantDetails = response.foodAndRestaurantDetails;
-                        if (Array.isArray(foodsAndRestaurantDetails)) {
-                            foodsAndRestaurantDetails.forEach(function (foodAndRestaurantDetail) {
-                                //console.log(foodAndRestaurantDetail); // Log each element to understand its structure
-                                ShowFoodEditing(foodAndRestaurantDetail); // Call GenerateSearchResult function
+                        let foods = response.foods;
+                        if (Array.isArray(foods)) {
+                            foods.forEach(function (food) {
+                                ShowFoodEditing(food);
                             });
-                        } else {
-                            console.log("foodsAndRestaurantDetails is not an array:", foodsAndRestaurantDetails);
                         }
                     } else {
                         console.log("Error:", response.error);
@@ -263,26 +269,26 @@ if (isset($_POST['food-image-upload'])) {
 
 
         //SHOW A FOOD =============================================================
-        function ShowFoodEditing(data) {
+        function ShowFoodEditing(food) {
 
             $("#editing-area").removeClass("d-none");
-            $("#editing-area .get-title").text("Editing: " + data.foodname);
+            $("#editing-area .get-title").text("Editing: " + food['name']);
 
             //find the first form and change its action attribute
-            $('#editing-area').find('form').attr('action', `?page=panel&panel=editfood&foodid=${data.foodid}`);
-            $(".get-foodid").val(data.foodid);
-            $("#editing-area input[name='name']").val(data.foodname);
-            $("#editing-area textarea[name='description']").val(data.fooddescription);
-            $("#editing-area input[name='price']").val(data.foodprice);
-            $('#food-image-upload-form').find("button").val(data.foodid);
-            $('#food-image-upload-form').find("img").attr("src", GET_IMAGE(data.foodimage));
-            console.log(GET_IMAGE(data.foodimage));
-            var onlyExtra = data.foodonlyextra == 1 ? true : false;
-            var visible = data.foodvisible == 1 ? true : false;
+            $('#editing-area').find('form').attr('action', `?page=panel&panel=editfood&foodid=${food['id']}`);
+            $(".get-foodid").val(food['id']);
+            $("#editing-area input[name='name']").val(food['name']);
+            $("#editing-area textarea[name='description']").val(food['description']);
+            $("#editing-area input[name='price']").val(food['price']);
+            $('#food-image-upload-form').find("button").val(food['id']);
+            $('#food-image-upload-form').find("img").attr("src", GET_IMAGE(food['image']));
+
+            var onlyExtra = food['onlyextra'] == 1 ? true : false;
+            var visible = food['visible'] == 1 ? true : false;
             $("#editing-area input[name='onlyExtra']").prop("checked", onlyExtra);
             $("#editing-area input[name='visible']").prop("checked", visible);
 
-            fetchFoodCategories(data.foodid); // Fetch and update categories for the current food
+            fetchFoodCategories(food['id']); // Fetch and update categories for the current food
         }
         // AJAX request to fetch categories for a specific food
         function fetchFoodCategories(foodid) {

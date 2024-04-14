@@ -5,17 +5,7 @@ require_once "../../utils/helpers.php";
 
 if ($_SERVER["REQUEST_METHOD"] == "GET") {
     // Base SQL query
-    $sql = "SELECT 
-        foods.id as foodid, 
-        foods.name as foodname,
-        foods.description as fooddescription,
-        foods.price as foodprice,
-        foods.onlyextra as foodonlyextra,
-        foods.visible as foodvisible,
-        foods.image as foodimage,
-        restaurants.id as restaurantid,
-        restaurants.name as restaurantname
-        FROM foods, restaurants " .
+    $sql = "SELECT foods.* FROM foods, restaurants " .
         (isset($_GET["categories"]) ? ", foodcategories" : "") .
         " WHERE foods.restaurantid = restaurants.id" .
         (isset($_GET["restaurantid"]) ? " AND foods.restaurantid={$_GET['restaurantid']} " : "");
@@ -68,17 +58,12 @@ if ($_SERVER["REQUEST_METHOD"] == "GET") {
         $sortType = $_GET['sort-type'] == "price" ? "price" : "food_name";
         $sql .= " ORDER BY $sortType $sortDir";
     }
-
     $result = mysqli_query($conn, $sql);
+    $foods = mysqli_fetch_all($result, MYSQLI_ASSOC);
 
-    if (mysqli_num_rows($result) == 0) {
-        http_response_code(404);
-        echo json_encode(["error" => "food not found"]);
-        exit;
-    }
 
-    $foodAndRestaurantDetails = mysqli_fetch_all($result, MYSQLI_ASSOC);
-    echo json_encode(["success" => true, "foodAndRestaurantDetails" => $foodAndRestaurantDetails, "echo" => $_GET]);
+
+    echo json_encode(["success" => true, "foods" => $foods, "echo" => $_GET]);
     exit;
 
 } else {

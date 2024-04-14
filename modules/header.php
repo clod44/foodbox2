@@ -42,7 +42,6 @@ $PAGE = isset($_GET['page']) ? $_GET['page'] : "home"; //(isset($_SESSION['page'
                     <h2 class="m-0 p-0 fs-7 ms-auto" style="line-height: 0em;">- since 2003</h2>
                 </div>
             </a>
-
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
                 data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false"
                 aria-label="Toggle navigation">
@@ -50,17 +49,58 @@ $PAGE = isset($_GET['page']) ? $_GET['page'] : "home"; //(isset($_SESSION['page'
             </button>
             <div class="collapse navbar-collapse" id="navbarSupportedContent">
                 <ul class="navbar-nav ms-auto">
-                    <li class="me-2">
-                        <div class="input-group flex-nowrap align-items-center h-100">
-                            <select class="form-select form-select-sm text-center" id="inputGroupSelect01">
-                                <?php for ($i = 0; $i < 3; $i++) { ?>
-                                    <option <?= ($i == 0 ? "selected" : "") ?> value="<?= $i ?>">📌 1234 Elm Street,
-                                        Springfield, NY 12345, United States</option>
-                                <?php } ?>
-                            </select>
-                        </div>
 
-                    </li>
+                    <?php
+                    if (IS_USER_LOGGED_IN() && $_SESSION['user']['usertype'] != 1) {
+                        ?>
+                        <li class="me-2">
+                            <div class="input-group flex-nowrap align-items-center h-100">
+                                <select class="form-select form-select-sm text-center" id="inputGroupSelect01">
+                                    <?php
+                                    $isRestaurant = $_SESSION['user']['usertype'] == 1;
+                                    if ($isRestaurant) {
+                                        $sql = "SELECT * FROM addresses WHERE id={$_SESSION['user']['addressid']}";
+                                        echo "<p class='fs-7'>restaurants can only have 1 address at max</p>";
+                                    } else {
+                                        $sql = "SELECT * FROM addresses WHERE userid={$_SESSION['user']['id']}";
+                                    }
+                                    $result = mysqli_query($conn, $sql);
+                                    if (!$result) {
+                                        echo "<p>No address found</p>";
+                                    } else {
+                                        $addresses = mysqli_fetch_all($result, MYSQLI_ASSOC);
+                                    }
+                                    if (count($addresses) == 0) {
+                                        ?>
+                                        <option selected value="-1">📌 Add address now 📌</option>
+                                        <?php
+                                    } else {
+
+                                        foreach ($addresses as $index => $address) {
+                                            $sql = "SELECT * FROM cities WHERE id={$address['cityid']}";
+                                            $result = mysqli_query($conn, $sql);
+                                            $city = mysqli_fetch_assoc($result);
+
+                                            $sql = "SELECT * FROM districts WHERE id={$address['districtid']}";
+                                            $result = mysqli_query($conn, $sql);
+                                            $district = mysqli_fetch_assoc($result);
+
+                                            $sql = "SELECT * FROM streets WHERE id={$address['streetid']}";
+                                            $result = mysqli_query($conn, $sql);
+                                            $street = mysqli_fetch_assoc($result);
+
+                                            ?>
+
+                                            <option value="<?= $address['id'] ?>">📌
+                                                <?= ($index + 1) . ", " . $street['name'] . ", " . $district['name'] . ", " . $city['name'] ?>
+                                            </option>
+                                        <?php }
+                                    } ?>
+                                </select>
+                            </div>
+
+                        </li>
+                    <?php } ?>
                     <li class="nav-item hover-scale align-items-center justify-content-center d-flex">
                         <a class="nav-link text-nowrap <?php echo ($PAGE == "home" ? "active fw-bold" : ""); ?>"
                             href="./">Home</a>

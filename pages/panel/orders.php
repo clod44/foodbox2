@@ -29,59 +29,61 @@
     </form>
     <div>
         <div class="d-flex flex-column gap-4 rounded border border-primary p-1">
-            <div class="d-flex flex-nowrap p-1 gap-2 align-items-start border border-primary rounded text-bg-secondary">
-                <img src="./media/sample.jpg" class="rounded shadow" style="height:3rem;">
-                <div class="d-flex flex-column flex-grow-1"> <!-- Added flex-grow-1 class -->
-                    <div class="accordion" id="accordionExample">
-                        <div class="accordion-item">
-                            <h2 class="accordion-header" id="headingOne">
-                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
-                                    data-bs-target="#collapseOne" aria-expanded="false" aria-controls="collapseOne">
-                                    📅12.03.2024 - 14:36:27 🧾189 👤446
-                                </button>
-                                <div class="btn-group" role="group" aria-label="Order status">
-                                    <input type="radio" class="btn-check" name="btnradio" id="btnradio1"
-                                        autocomplete="off">
-                                    <label class="btn btn-outline-danger" for="btnradio1">❌Rejected</label>
-                                    <input type="radio" class="btn-check" name="btnradio" id="btnradio2"
-                                        autocomplete="off" checked>
-                                    <label class="btn btn-outline-warning" for="btnradio2">⌛Pending</label>
-                                    <input type="radio" class="btn-check" name="btnradio" id="btnradio3"
-                                        autocomplete="off">
-                                    <label class="btn btn-outline-warning" for="btnradio3">🍳Preparing</label>
-                                    <input type="radio" class="btn-check" name="btnradio" id="btnradio4"
-                                        autocomplete="off">
-                                    <label class="btn btn-outline-warning" for="btnradio4">🛵Delivering</label>
-                                    <input type="radio" class="btn-check" name="btnradio" id="btnradio5"
-                                        autocomplete="off">
-                                    <label class="btn btn-outline-success" for="btnradio5">✅Delivered</label>
-                                </div>
+            <?php for ($i = 0; $i < 10; $i++) { ?>
+                <div class="d-flex flex-nowrap p-1 gap-2 align-items-start border border-primary rounded text-bg-secondary">
+                    <img src="./media/sample.jpg" class="rounded shadow" style="height:3rem;">
+                    <div class="d-flex flex-column flex-grow-1">
+                        <div class="accordion" id="accordionExample">
+                            <div class="accordion-item">
+                                <h2 class="accordion-header" id="headingOne">
+                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                        data-bs-target="#collapseOne" aria-expanded="false" aria-controls="collapseOne">
+                                        📅12.03.2024 - 14:36:27 🧾189 👤446
+                                    </button>
+                                    <div class="btn-group" role="group" aria-label="Order status">
+                                        <input type="radio" class="btn-check" name="btnradio" id="btnradio1"
+                                            autocomplete="off">
+                                        <label class="btn btn-outline-danger" for="btnradio1">❌Rejected</label>
+                                        <input type="radio" class="btn-check" name="btnradio" id="btnradio2"
+                                            autocomplete="off" checked>
+                                        <label class="btn btn-outline-warning" for="btnradio2">⌛Pending</label>
+                                        <input type="radio" class="btn-check" name="btnradio" id="btnradio3"
+                                            autocomplete="off">
+                                        <label class="btn btn-outline-warning" for="btnradio3">🍳Preparing</label>
+                                        <input type="radio" class="btn-check" name="btnradio" id="btnradio4"
+                                            autocomplete="off">
+                                        <label class="btn btn-outline-warning" for="btnradio4">🛵Delivering</label>
+                                        <input type="radio" class="btn-check" name="btnradio" id="btnradio5"
+                                            autocomplete="off">
+                                        <label class="btn btn-outline-success" for="btnradio5">✅Delivered</label>
+                                    </div>
 
-                            </h2>
-                            <div id="collapseOne" class="accordion-collapse collapse" aria-labelledby="headingOne"
-                                data-bs-parent="#accordionExample">
-                                <div class="accordion-body">
-                                    <ul class="m-0">
-                                        <?php
-                                        for ($j = 0; $j < 3; $j++) {
-                                            ?>
-                                            <li>
-                                                <p class="fs-7 m-0">Something extra heooooooo</p>
-                                            </li>
-                                        <?php } ?>
-                                    </ul>
+                                </h2>
+                                <div id="collapseOne" class="accordion-collapse collapse" aria-labelledby="headingOne"
+                                    data-bs-parent="#accordionExample">
+                                    <div class="accordion-body">
+                                        <ul class="m-0">
+                                            <?php
+                                            for ($j = 0; $j < 3; $j++) {
+                                                ?>
+                                                <li>
+                                                    <p class="fs-7 m-0">Something extra heooooooo</p>
+                                                </li>
+                                            <?php } ?>
+                                        </ul>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                    <div class="input-group input-group-sm">
-                        <span class="input-group-text" id="basic-addon1">$69.00 x</span>
-                        <input type="number" readonly class="form-control" placeholder="amount" value="1">
+                        <div class="input-group input-group-sm">
+                            <span class="input-group-text" id="basic-addon1">$69.00 x</span>
+                            <input type="number" readonly class="form-control" placeholder="amount" value="1">
+                        </div>
                     </div>
                 </div>
-            </div>
-            <hr>
+                <hr>
+                <?php
+            } ?>
         </div>
-
     </div>
 </div>

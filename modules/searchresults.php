@@ -26,21 +26,15 @@
             $.ajax({
                 type: "GET",
                 url: "./api/food/query.php",
-                dataType: 'json', // Specify JSON dataType to automatically parse response as JSON
+                dataType: 'json',
                 success: function (response) {
                     console.log(response);
                     if (response.success) {
-                        console.log("Food retrieved");
-                        //console.log(response);
-                        var foodsAndRestaurantDetails = response.foodAndRestaurantDetails;
-                        if (Array.isArray(foodsAndRestaurantDetails)) {
-                            foodsAndRestaurantDetails.forEach(function (foodAndRestaurantDetail) {
-                                //console.log(foodAndRestaurantDetail); // Log each element to understand its structure
-
-                                GenerateSearchResult(foodAndRestaurantDetail); // Call GenerateSearchResult function
+                        let foods = response.foods;
+                        if (Array.isArray(foods)) {
+                            foods.forEach(function (food) {
+                                GenerateSearchResult(food);
                             });
-                        } else {
-                            console.log("foodsAndRestaurantDetails is not an array:", foodsAndRestaurantDetails);
                         }
                     } else {
                         console.log("Error:", response.error);

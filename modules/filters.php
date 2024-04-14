@@ -92,17 +92,12 @@
                 success: function (response) {
                     console.log(response.echo)
                     if (response.success) {
-                        console.log("filter success");
-                        console.log(response.echo);
 
-                        var foodsAndRestaurantDetails = response.foodAndRestaurantDetails;
-                        if (Array.isArray(foodsAndRestaurantDetails)) {
-                            foodsAndRestaurantDetails.forEach(function (foodAndRestaurantDetail) {
-                                //console.log(foodAndRestaurantDetail); // Log each element to understand its structure
-                                GenerateSearchResult(foodAndRestaurantDetail); // Call GenerateSearchResult function
+                        let foods = response.foods;
+                        if (Array.isArray(foods)) {
+                            foods.forEach(function (food) {
+                                GenerateSearchResult(food);
                             });
-                        } else {
-                            console.log("foodsAndRestaurantDetails is not an array:", foodsAndRestaurantDetails);
                         }
                     } else {
                         console.log(response.error); // Log the error message to the console
@@ -110,7 +105,7 @@
                     }
                 },
                 error: function (xhr, status, error) {
-                    var errorMessage = xhr.responseText ? JSON.parse(xhr.responseText).error : 'Unknown error';
+                    var errorMessage = xhr.responseText ? xhr.responseText : 'Unknown error';
                     console.log(errorMessage); // Log the error message to the console
                     alert('filter failed:\n' + errorMessage);
                 }
