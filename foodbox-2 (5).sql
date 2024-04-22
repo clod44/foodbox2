@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost:3306
--- Generation Time: Apr 14, 2024 at 11:19 PM
+-- Generation Time: Apr 22, 2024 at 04:31 AM
 -- Server version: 8.0.30
 -- PHP Version: 8.1.10
 
@@ -45,10 +45,11 @@ INSERT INTO `addresses` (`id`, `userid`, `name`, `streetid`, `districtid`, `city
 (1, -1, 'my address', 12, 4, 2, NULL),
 (2, -1, 'work', 15, 5, 2, 1),
 (3, -1, 'king', 27, 9, 3, 1),
-(4, 1, 'home', 1, 1, 1, 1),
-(5, 1, 'work', 14, 5, 2, 1),
-(6, 1, 'mama', 20, 7, 3, 1),
-(8, -1, 'merkez', 10, 4, 2, 1);
+(8, -1, 'merkez', 10, 4, 2, 1),
+(12, 1, 'home', 1, 1, 1, 1),
+(14, 1, 'job', 14, 5, 2, 1),
+(17, 1, 'test', 27, 9, 3, 1),
+(18, 2, 'White house', 23, 8, 3, 1);
 
 -- --------------------------------------------------------
 
@@ -85,7 +86,9 @@ INSERT INTO `answers` (`id`, `questionid`, `foodid`, `text`, `price`, `orderval`
 (35, 8, -1, 'Example text', 0, 0, 1),
 (42, 9, -1, 'istemiyorum', 0, 0, 1),
 (43, 9, -1, '2', 0.5, 0, 1),
-(44, 9, -1, '5', 2, 0, 1);
+(44, 9, -1, '5', 2, 0, 1),
+(48, 10, -1, 'Example text', 0, 0, 1),
+(49, 10, -1, 'Example text 2', 999, 0, 1);
 
 -- --------------------------------------------------------
 
@@ -263,7 +266,8 @@ INSERT INTO `foodcategories` (`id`, `foodid`, `categoryid`, `active`) VALUES
 (22, 11, 4, 1),
 (23, 11, 28, 1),
 (24, 11, 29, 1),
-(25, 10, 21, 1);
+(26, 10, 21, 1),
+(27, 10, 22, 1);
 
 -- --------------------------------------------------------
 
@@ -328,10 +332,10 @@ CREATE TABLE `menus` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `orderdetailquestionanswer`
+-- Table structure for table `orderdetailquestionanswers`
 --
 
-CREATE TABLE `orderdetailquestionanswer` (
+CREATE TABLE `orderdetailquestionanswers` (
   `id` int NOT NULL,
   `orderdetailid` int NOT NULL,
   `questionid` int NOT NULL,
@@ -339,6 +343,48 @@ CREATE TABLE `orderdetailquestionanswer` (
   `price` float NOT NULL,
   `active` tinyint(1) NOT NULL DEFAULT '1'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_turkish_ci;
+
+--
+-- Dumping data for table `orderdetailquestionanswers`
+--
+
+INSERT INTO `orderdetailquestionanswers` (`id`, `orderdetailid`, `questionid`, `answerid`, `price`, `active`) VALUES
+(7, 4, 3, 11, 0, 1),
+(8, 4, 3, 13, 15, 1),
+(9, 4, 4, 17, 0, 1),
+(10, 6, 5, 27, 4, 1),
+(11, 6, 6, 32, 0, 1),
+(12, 6, 7, 34, 0, 1),
+(13, 7, 5, 26, 1.8, 1),
+(14, 7, 6, 31, 2, 1),
+(15, 8, 5, 26, 1.8, 1),
+(16, 8, 6, 32, 0, 1),
+(17, 8, 7, 34, 0, 1),
+(18, 10, 9, 44, 2, 1),
+(19, 11, 3, 11, 0, 1),
+(20, 11, 4, 17, 0, 1),
+(21, 12, 9, 43, 0.5, 1),
+(22, 14, 9, 43, 0.5, 1),
+(23, 15, 9, 42, 0, 1),
+(24, 17, 9, 43, 0.5, 1),
+(25, 18, 9, 43, 0.5, 1),
+(26, 19, 9, 42, 0, 1),
+(27, 20, 5, 26, 1.8, 1),
+(28, 20, 6, 32, 0, 1),
+(29, 20, 7, 34, 0, 1),
+(30, 21, 3, 11, 0, 1),
+(31, 21, 3, 12, 99, 1),
+(32, 21, 3, 13, 15, 1),
+(33, 21, 4, 18, 0, 1),
+(34, 22, 9, 43, 0.5, 1),
+(35, 22, 9, 44, 2, 1),
+(36, 23, 5, 27, 4, 1),
+(37, 23, 6, 32, 0, 1),
+(38, 23, 7, 34, 0, 1),
+(39, 24, 3, 11, 0, 1),
+(40, 24, 4, 17, 0, 1),
+(41, 25, 9, 43, 0.5, 1),
+(42, 26, 9, 42, 0, 1);
 
 -- --------------------------------------------------------
 
@@ -354,6 +400,23 @@ CREATE TABLE `orderdetails` (
   `active` tinyint(1) NOT NULL DEFAULT '1'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_turkish_ci;
 
+--
+-- Dumping data for table `orderdetails`
+--
+
+INSERT INTO `orderdetails` (`id`, `orderid`, `foodid`, `price`, `active`) VALUES
+(4, 2, 9, 17.3, 1),
+(5, 2, 10, 49, 1),
+(6, 2, 11, 23.4, 1),
+(19, 9, 10, 49, 1),
+(20, 10, 11, 23.4, 1),
+(21, 10, 9, 17.3, 1),
+(22, 11, 10, 49, 1),
+(23, 11, 11, 23.4, 1),
+(24, 12, 9, 17.3, 1),
+(25, 12, 10, 49, 1),
+(26, 12, 10, 49, 1);
+
 -- --------------------------------------------------------
 
 --
@@ -364,25 +427,25 @@ CREATE TABLE `orders` (
   `id` int NOT NULL,
   `restaurantid` int NOT NULL,
   `userid` int NOT NULL,
-  `approvalpersonnel` int NOT NULL,
-  `deliverypersonnel` int NOT NULL,
-  `status` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_turkish_ci NOT NULL,
-  `orderconfirmed` tinyint(1) NOT NULL,
+  `addressid` int NOT NULL DEFAULT '-1',
+  `approvalpersonnel` int NOT NULL DEFAULT '-1',
+  `deliverypersonnel` int NOT NULL DEFAULT '-1',
+  `status` int NOT NULL DEFAULT '0',
+  `orderconfirmed` tinyint(1) NOT NULL DEFAULT '0',
+  `timestamp` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `active` tinyint(1) NOT NULL DEFAULT '1'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_turkish_ci;
 
--- --------------------------------------------------------
-
 --
--- Table structure for table `questionanswers`
+-- Dumping data for table `orders`
 --
 
-CREATE TABLE `questionanswers` (
-  `id` int NOT NULL,
-  `questionid` int NOT NULL,
-  `answerid` int NOT NULL,
-  `active` tinyint(1) NOT NULL DEFAULT '1'
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_turkish_ci;
+INSERT INTO `orders` (`id`, `restaurantid`, `userid`, `addressid`, `approvalpersonnel`, `deliverypersonnel`, `status`, `orderconfirmed`, `timestamp`, `active`) VALUES
+(2, 2, 1, 12, -1, -1, 1, 1, '2024-04-22 00:58:00', 1),
+(9, 2, 1, 12, -1, -1, 0, 1, '2024-04-22 04:06:26', 1),
+(10, 2, 1, 12, -1, -1, 0, 1, '2024-04-22 04:11:46', 1),
+(11, 2, 1, 12, -1, -1, 0, 1, '2024-04-22 04:12:24', 1),
+(12, 2, 2, 18, -1, -1, 0, 1, '2024-04-22 04:14:20', 1);
 
 -- --------------------------------------------------------
 
@@ -410,7 +473,8 @@ INSERT INTO `questions` (`id`, `foodid`, `title`, `text`, `required`, `type`, `a
 (5, 11, 'Extra Kanat', 'almak zorundasin', 1, 2, 1),
 (6, 11, 'Extra içecekler?', 'tatlandırıc içerir', 0, 1, 1),
 (7, 11, 'Gizlilik hakları', 'kabul etmek zorunlu', 1, 2, 1),
-(9, 10, 'plastik bardak?', 'Kaç tane istersiniz?', 0, 1, 1);
+(9, 10, 'plastik bardak?', 'Kaç tane istersiniz?', 0, 1, 1),
+(10, 10, 'Test checkbox', 'example description textasdasd', 0, 1, 1);
 
 -- --------------------------------------------------------
 
@@ -500,7 +564,7 @@ CREATE TABLE `users` (
   `phone` varchar(15) CHARACTER SET utf8mb4 COLLATE utf8mb4_turkish_ci DEFAULT NULL,
   `password` varchar(60) CHARACTER SET utf8mb4 COLLATE utf8mb4_turkish_ci DEFAULT NULL,
   `restaurantid` int DEFAULT NULL,
-  `addressid` int DEFAULT NULL,
+  `addressid` int NOT NULL DEFAULT '-1',
   `image` varchar(200) CHARACTER SET utf8mb4 COLLATE utf8mb4_turkish_ci DEFAULT 'user.png',
   `usertype` int NOT NULL DEFAULT '0',
   `active` tinyint(1) DEFAULT NULL
@@ -511,7 +575,8 @@ CREATE TABLE `users` (
 --
 
 INSERT INTO `users` (`id`, `username`, `name`, `email`, `phone`, `password`, `restaurantid`, `addressid`, `image`, `usertype`, `active`) VALUES
-(1, 'aga', 'McDonalds', 'aga@gmail.com', '2222', '123', NULL, NULL, 'pfp_661c31d4ca382.jpg', 0, NULL);
+(1, 'aga', 'Superman', 'aga@gmail.com', '2222', '123', NULL, 12, 'pfp_661c31d4ca382.jpg', 0, NULL),
+(2, 'obama', 'Barack Obama', 'obama@gmail.com', NULL, '123', NULL, 18, 'user.png', 0, NULL);
 
 --
 -- Indexes for dumped tables
@@ -590,9 +655,9 @@ ALTER TABLE `menus`
   ADD PRIMARY KEY (`id`);
 
 --
--- Indexes for table `orderdetailquestionanswer`
+-- Indexes for table `orderdetailquestionanswers`
 --
-ALTER TABLE `orderdetailquestionanswer`
+ALTER TABLE `orderdetailquestionanswers`
   ADD PRIMARY KEY (`id`);
 
 --
@@ -605,12 +670,6 @@ ALTER TABLE `orderdetails`
 -- Indexes for table `orders`
 --
 ALTER TABLE `orders`
-  ADD PRIMARY KEY (`id`);
-
---
--- Indexes for table `questionanswers`
---
-ALTER TABLE `questionanswers`
   ADD PRIMARY KEY (`id`);
 
 --
@@ -645,13 +704,13 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT for table `addresses`
 --
 ALTER TABLE `addresses`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=19;
 
 --
 -- AUTO_INCREMENT for table `answers`
 --
 ALTER TABLE `answers`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=45;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=50;
 
 --
 -- AUTO_INCREMENT for table `categories`
@@ -693,7 +752,7 @@ ALTER TABLE `favorites`
 -- AUTO_INCREMENT for table `foodcategories`
 --
 ALTER TABLE `foodcategories`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=26;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=28;
 
 --
 -- AUTO_INCREMENT for table `foods`
@@ -714,34 +773,28 @@ ALTER TABLE `menus`
   MODIFY `id` int NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT for table `orderdetailquestionanswer`
+-- AUTO_INCREMENT for table `orderdetailquestionanswers`
 --
-ALTER TABLE `orderdetailquestionanswer`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT;
+ALTER TABLE `orderdetailquestionanswers`
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=43;
 
 --
 -- AUTO_INCREMENT for table `orderdetails`
 --
 ALTER TABLE `orderdetails`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=27;
 
 --
 -- AUTO_INCREMENT for table `orders`
 --
 ALTER TABLE `orders`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT for table `questionanswers`
---
-ALTER TABLE `questionanswers`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
 
 --
 -- AUTO_INCREMENT for table `questions`
 --
 ALTER TABLE `questions`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
 -- AUTO_INCREMENT for table `restaurants`
@@ -759,7 +812,7 @@ ALTER TABLE `streets`
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

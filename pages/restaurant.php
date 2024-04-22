@@ -28,6 +28,88 @@ if (isset($_POST['favorite-restaurant'])) {
     }
 }
 
+if (isset($_POST["order-food"])) {
+    $foodid = $_POST["order-food"];
+
+    $sql = "SELECT * FROM questions WHERE foodid=$foodid";
+    $result = mysqli_query($conn, $sql);
+    $questions = mysqli_fetch_all($result, MYSQLI_ASSOC);
+    $answers = [];
+
+    foreach ($questions as $question) {
+        $sql = "SELECT * FROM answers WHERE questionid={$question['id']}";
+        $result = mysqli_query($conn, $sql);
+        $answers[$question['id']] = mysqli_fetch_all($result, MYSQLI_ASSOC);
+    }
+
+    //for each questions
+    $givenAnswers = [];
+    foreach ($questions as $question) {
+        $thisAnswers = $answers[$question['id']];
+        $foundAnswers = [];
+
+        if ($question["type"] == 1) { //checkbox
+            foreach ($thisAnswers as $answer) {
+                if (isset($_POST["checkbox_" . $answer['id']])) {
+                    $foundAnswers[] = $answer['id'];
+                }
+            }
+        } else if ($question["type"] == 2) { //radio
+            //radios only have one answer and they must be named same so i used the question id for name and answerid for value
+            if (isset($_POST["radio_" . $thisAnswers[0]['questionid']])) {
+                $foundAnswers[] = $_POST["radio_" . $thisAnswers[0]['questionid']]; //this returns answerid
+            }
+        }
+        $givenAnswers[$question['id']] = $foundAnswers;
+    }
+    //console_log(json_encode($givenAnswers));
+
+    //get the restaurantid from foods table
+    $sql = "SELECT * FROM foods WHERE id=$foodid";
+    $result = mysqli_query($conn, $sql);
+    $food = mysqli_fetch_assoc($result);
+
+    //orders
+    //first off, remove all other orders which restaurantid!=$restaurantid
+    $sql = "DELETE FROM orders WHERE restaurantid!={$food['restaurantid']} AND userid={$_SESSION['user']['id']}";
+    $result = mysqli_query($conn, $sql);
+
+    //check if we already have an order record with orderconfirmed=0
+    $sql = "SELECT * FROM orders WHERE userid={$_SESSION['user']['id']} AND restaurantid={$food['restaurantid']} AND orderconfirmed=0";
+    $result = mysqli_query($conn, $sql);
+    $orderid = -1;
+    if (mysqli_num_rows($result) < 1) {
+        //create the order first
+        $sql = "INSERT INTO orders (restaurantid, userid) VALUES({$food['restaurantid']}, {$_SESSION['user']['id']})";
+        $result = mysqli_query($conn, $sql);
+        $orderid = mysqli_insert_id($conn);
+    } else {
+        $order = mysqli_fetch_assoc($result);
+        $orderid = $order['id'];
+    }
+
+    //add an order details
+    //	id	orderid	foodid	price	active	
+    $sql = "INSERT INTO orderdetails (orderid, foodid, price) VALUES($orderid, $foodid, {$food['price']})";
+    $result = mysqli_query($conn, $sql);
+    $orderdetailid = mysqli_insert_id($conn);
+
+    //for each question add its answers to the orderdetailquestionanswers
+    //id	orderdetailid	questionid	answerid	price	active	
+    foreach ($givenAnswers as $questionid => $answers) {
+        foreach ($answers as $answerid) {
+            //fetch the answer details to get price
+            $sql = "SELECT * FROM answers WHERE id=$answerid";
+            $result = mysqli_query($conn, $sql);
+            $answer = mysqli_fetch_assoc($result);
+
+            $sql = "INSERT INTO orderdetailquestionanswers (orderdetailid, questionid, answerid, price) VALUES($orderdetailid, $questionid, $answerid, {$answer['price']})";
+            $result = mysqli_query($conn, $sql);
+        }
+    }
+
+}
+
 
 //optional
 $selectedfoodid = $_GET['selectedfoodid'] ?? null;
@@ -173,49 +255,9 @@ $selectedfoodid = $_GET['selectedfoodid'] ?? null;
             } ?>
 
         </div>
+
         <!--your food box-->
-        <div class="col-4 m-0 p-0">
-            <div class="ms-3 flex-grow-1 border border-primary rounded shadow p-4">
-                <h3 class="m-0 p-0 text-center mb-2">📦 Your Box 📦</h3>
-                <hr class="p-0 m-2 border-primary">
-                <div class="rounded w-100 mb-2" style="height:20rem;overflow-x:hidden; overflow-y:auto;">
-                    <?php
-                    for ($i = 0; $i < 3; $i++) {
-                        ?>
-                        <div class="d-flex flex-nowrap p-1 gap-2 align-items-start">
-                            <img src="./media/sample.jpg" class="rounded shadow" style="height:3rem;">
-                            <div class="d-flex flex-column flex-grow-1"> <!-- Added flex-grow-1 class -->
-                                <div class="d-flex justify-content-between align-items-start">
-                                    <p class="m-0 p-0 fs-6 fw-bold">McChicken RedFlaming</p>
-                                    <button class="btn btn-lg btn-outline m-0 p-0 fs-2">⚙️</button>
-                                </div>
-                                <ul class="m-0 mb-2">
-                                    <?php
-                                    for ($j = 0; $j < 3; $j++) {
-                                        ?>
-                                        <li>
-                                            <p class="fs-7 m-0">Something extra heooooooo</p>
-                                        </li>
-                                    <?php } ?>
-                                </ul>
-                                <div class="input-group input-group-sm">
-                                    <span class="input-group-text" id="basic-addon1">$69.00 x</span>
-                                    <input type="number" class="form-control" placeholder="amount" value="1">
-                                </div>
-                            </div>
-                        </div>
-                        <hr class="border-primary m-0 p-0 my-2">
-                    <?php } ?>
-                </div>
-                <div class="d-flex flex-nowrap justify-content-between align-items-center mb-3">
-                    <p class="m-0 p-0">Total:</p>
-                    <p class="m-0 p-0 fw-bold">$132.00</p>
-                </div>
-                <button class="btn btn-lg w-100 btn-primary btn-shadow">
-                    Confirm the Box ✅
-                </button>
-            </div>
-        </div>
+        <?php require "./modules/yourbox.php" ?>
     </div>
 
 </div>
@@ -232,7 +274,6 @@ $selectedfoodid = $_GET['selectedfoodid'] ?? null;
         });
 
         function ShowFoodModalFromID(foodid) {
-
             var food = null;
             //get food info from endpoint
             $.ajax({
@@ -291,20 +332,7 @@ $selectedfoodid = $_GET['selectedfoodid'] ?? null;
             const modalData = [
                 new ModalImage(GET_IMAGE(food['image'])),
                 new ModalTitle(food['name']),
-                new ModalLabel(food['description']),
-                /*
-                new ModalInput("biggest wish:", "mywish1"),
-                new ModalInput("best wish:", "mywish2"),
-                new ModalTitle("Drink?:"),
-                new ModalRadio("CocaCola", "drink", 1, 10, true),
-                new ModalRadio("Pepsi", "drink", 2, 15, true),
-                new ModalTitle("Extras?:"),
-                new ModalCheckbox("Tomato", "extras", "tomato", 12),
-                new ModalCheckbox("Salad", "extras", "salad", 0),
-                new ModalCheckbox("Melon", "extras", "melon", 5),
-                new ModalTitle("Final:"),
-                new ModalCheckbox("Agree to terms", "terms", "1", 0),
-            */
+                new ModalLabel(food['description'])
             ];
 
             questions.forEach(function (question, index, array) {
@@ -325,10 +353,11 @@ $selectedfoodid = $_GET['selectedfoodid'] ?? null;
                 answers[question['id']].forEach(function (answer, index, array) {
                     switch (type) {
                         case "1": //checkbox
-                            modalData.push(new ModalCheckbox(answer['text'], "answers_" + answer['questionid'] + "[]", "something", answer['price']));
+                            modalData.push(new ModalCheckbox(answer['text'], "checkbox_" + answer['id'], "some value", answer['price']));
                             break;
                         case "2": //radio
-                            modalData.push(new ModalRadio(answer['text'], "drink", 1, answer['price'], true));
+                            //here the radio name must be something that the answers share in common
+                            modalData.push(new ModalRadio(answer['text'], "radio_" + answer['questionid'], answer['id'], answer['price']));
                             break;
                         /*
                         //we will screw off the text input as it requires db modification and i dont really care this tbh
@@ -345,7 +374,7 @@ $selectedfoodid = $_GET['selectedfoodid'] ?? null;
             });
 
             // Create an instance of ModalCreator
-            const modal = new ModalCreator("Viewing: " + food['name'], modalData, "Add to Cart");
+            const modal = new ModalCreator("Viewing: " + food['name'], modalData, "Add to Cart", "?page=restaurant&restaurantid=" + food['restaurantid'], "order-food", food['id']);
             // Show the modal
             modal.show();
         }

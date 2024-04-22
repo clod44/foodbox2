@@ -62,6 +62,7 @@ class ModalCheckbox {
     constructor (label, name, value, price) {
         this.label = label;
         this.name = name;
+        this.value = value;
         this.price = price;
         this.id = 'input_' + Math.floor(Math.random() * 10000);
         this.html = "";
@@ -82,12 +83,11 @@ class ModalCheckbox {
 
 
 class ModalRadio {
-    constructor (label, name, value, price, requireOne) {
+    constructor (label, name, value, price) {
         this.label = label;
         this.name = name;
         this.value = value;
         this.price = price;
-        this.requireOne = requireOne;
         this.id = 'radio_' + Math.floor(Math.random() * 10000);
         this.html = "";
         this.generateHtml();
@@ -95,7 +95,7 @@ class ModalRadio {
     generateHtml() {
         this.html =
             `<div class="form-check">
-                <input class="form-check-input" type="radio" name="${this.name}" id="${this.id}" value="option1" ` + (this.requireOne ? "required" : "") + `>
+                <input class="form-check-input" type="radio" name="${this.name}" id="${this.id}" value="${this.value}" required>
                     <label class="form-check-label" for="${this.id}">${this.label}</label>` +
             (this.price > 0 ? `<span class="ms-2 badge text-bg-warning">$${this.price}</span>` : ``) +
             `</div>`;
@@ -104,7 +104,9 @@ class ModalRadio {
 }
 
 class ModalCreator {
-    constructor (title, data, buttonText, url = "") {
+    constructor (title, data, buttonText, url = "", name = "test", foodid = -1) {
+        this.name = name;
+        this.foodid = foodid;
         this.title = title;
         this.data = data;
         this.buttonText = buttonText;
@@ -133,7 +135,7 @@ class ModalCreator {
                     <div class="modal-body">
                         <form method="post" action="${this.url}">
                             ${content}
-                            <button type="submit" class="btn btn-primary">${this.buttonText}</button>
+                            <button type="submit" class="btn btn-primary" name="${this.name}" value="${this.foodid}">${this.buttonText}</button>
                         </form>    
                     </div>
                 </div>
@@ -143,6 +145,7 @@ class ModalCreator {
     }
 
     show() {
+        this.generateHtml();
         // Append the modal HTML to the body
         $('body').append(this.html);
 

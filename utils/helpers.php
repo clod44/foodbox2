@@ -108,5 +108,93 @@ function UPLOAD_IMAGE($uploadedFileName, $newFileNamePrefix, $callback)
     }
 }
 
+function console_log($message)
+{
+    echo '<script>';
+    echo 'console.log(' . $message . ')';
+    echo '</script>';
+}
+
+
+function GET_BOX_PRICE($userid, $orderid = null)
+{
+    global $conn;
+    if ($orderid == null) {
+        $sql = "SELECT * FROM orders WHERE userid=$userid AND orderconfirmed=0";
+    } else {
+        $sql = "SELECT * FROM orders WHERE id=$orderid";
+    }
+    $result = mysqli_query($conn, $sql);
+    $order = mysqli_fetch_assoc($result);
+    if ($order == null) {
+        return 0;
+    }
+
+    $sql = "SELECT * FROM orderdetails WHERE orderid={$order['id']}";
+    $result = mysqli_query($conn, $sql);
+    $orderdetails = mysqli_fetch_all($result, MYSQLI_ASSOC);
+    if ($orderdetails == null) {
+        return 0;
+    }
+
+    $price = 0;
+    foreach ($orderdetails as $orderdetail) {
+        $price += GET_ORDERDETAIL_PRICE($orderdetail['id']);
+    }
+    return $price;
+}
+function GET_ORDERDETAIL_PRICE($orderdetailid)
+{
+    global $conn;
+    $sql = "SELECT * FROM orderdetails WHERE id=$orderdetailid";
+    $result = mysqli_query($conn, $sql);
+    $orderdetail = mysqli_fetch_assoc($result);
+    $price = $orderdetail['price'];
+
+    $sql = "SELECT * FROM orderdetailquestionanswers WHERE orderdetailid=$orderdetailid";
+    $result = mysqli_query($conn, $sql);
+    $orderdetailquestionanswers = mysqli_fetch_all($result, MYSQLI_ASSOC);
+    if ($orderdetailquestionanswers == null) {
+        return $price;
+    }
+
+    foreach ($orderdetailquestionanswers as $orderdetailquestionanswer) {
+        $price += $orderdetailquestionanswer['price'];
+    }
+    return $price;
+}
+
+function UPDATE_BOX_PRICES()
+{
+    global $conn;
+    $sql = "SELECT * FROM orders WHERE userid={$_SESSION['user']['id']} AND orderconfirmed=0";
+    $result = mysqli_query($conn, $sql);
+    $order = mysqli_fetch_assoc($result);
+
+    $sql = "SELECT * FROM orderdetails WHERE orderid={$order['id']}";
+    $result = mysqli_query($conn, $sql);
+    $orderdetails = mysqli_fetch_all($result, MYSQLI_ASSOC);
+
+    foreach ($orderdetails as $orderdetail) {
+        $sql = "SELECT * FROM foods WHERE id={$orderdetail['foodid']}";
+        $result = mysqli_query($conn, $sql);
+
+        $food = mysqli_fetch_assoc($result);
+        $sql = "UPDATE orderdetails SET price={$food['price']} WHERE id={$orderdetail['id']}";
+        $result = mysqli_query($conn, $sql);
+
+        $sql = "SELECT * FROM orderdetailquestionanswers WHERE orderdetailid={$orderdetail['id']}";
+        $result = mysqli_query($conn, $sql);
+        $orderdetailquestionanswers = mysqli_fetch_all($result, MYSQLI_ASSOC);
+        foreach ($orderdetailquestionanswers as $orderdetailquestionanswer) {
+            $sql = "SELECT * FROM answers WHERE id={$orderdetailquestionanswer['answerid']}";
+            $result = mysqli_query($conn, $sql);
+            $answer = mysqli_fetch_assoc($result);
+
+            $sql = "UPDATE orderdetailquestionanswers SET price={$answer['price']} WHERE id={$orderdetailquestionanswer['id']}";
+            $result = mysqli_query($conn, $sql);
+        }
+    }
+}
 
 ?>

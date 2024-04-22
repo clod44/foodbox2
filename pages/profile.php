@@ -23,6 +23,11 @@ if (isset($_POST['add-address'])) {
     normal users have address recordings with their id, 
     restaurants have -1 for the "userid" in the address recording.
     instead of having one to many relationships, restaurants actually hold the id of their address on theirself.
+    
+    ^ what the fuck does that mean???
+    addressid is just address id and nothing else. 
+    "userid" in the addresses table is "-1" if the user is a restaurant 
+    (because restaurant's id isnt in the users table).
     */
     $cityid = $_POST['city'];
     $districtid = $_POST['district'];
@@ -38,18 +43,12 @@ if (isset($_POST['add-address'])) {
             $sql = "INSERT INTO addresses (name, userid, cityid, districtid, streetid) VALUES ('$addressname', -1, $cityid, $districtid, $streetid)";
         }
         $result = mysqli_query($conn, $sql);
+        $addressid = mysqli_insert_id($conn);
+        $tableName = $_SESSION['user']['usertype'] == 1 ? "restaurants" : "users";
+        $sql = "UPDATE $tableName SET addressid=$addressid WHERE id={$_SESSION['user']['id']}";
+        $result = mysqli_query($conn, $sql);
         if (!$result) {
             alert("Error adding address: " . mysqli_error($conn));
-        }
-        if ($isRestaurant) {
-            //last insert id
-            $addressid = mysqli_insert_id($conn);
-            //update the restaurant's addressid to this value
-            $sql = "UPDATE restaurants SET addressid=$addressid WHERE id={$_SESSION['user']['id']}";
-            $result = mysqli_query($conn, $sql);
-            if (!$result) {
-                alert("Error updating restaurant address: " . mysqli_error($conn));
-            }
         }
     }
     UPDATE_SESSION_USER();

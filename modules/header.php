@@ -49,34 +49,31 @@ $PAGE = isset($_GET['page']) ? $_GET['page'] : "home"; //(isset($_SESSION['page'
             </button>
             <div class="collapse navbar-collapse" id="navbarSupportedContent">
                 <ul class="navbar-nav ms-auto">
-
                     <?php
                     if (IS_USER_LOGGED_IN() && $_SESSION['user']['usertype'] != 1) {
                         ?>
                         <li class="me-2">
                             <div class="input-group flex-nowrap align-items-center h-100">
-                                <select class="form-select form-select-sm text-center" id="inputGroupSelect01">
+                                <select class="form-select form-select-sm text-center" id="selected-address">
                                     <?php
-                                    $isRestaurant = $_SESSION['user']['usertype'] == 1;
-                                    if ($isRestaurant) {
-                                        $sql = "SELECT * FROM addresses WHERE id={$_SESSION['user']['addressid']}";
-                                        echo "<p class='fs-7'>restaurants can only have 1 address at max</p>";
-                                    } else {
-                                        $sql = "SELECT * FROM addresses WHERE userid={$_SESSION['user']['id']}";
-                                    }
+                                    $sql = "SELECT * FROM addresses WHERE userid={$_SESSION['user']['id']}";
                                     $result = mysqli_query($conn, $sql);
                                     if (!$result) {
                                         echo "<p>No address found</p>";
                                     } else {
                                         $addresses = mysqli_fetch_all($result, MYSQLI_ASSOC);
                                     }
+
+                                    //get selected address id
+                                    $selectedAddressID = $_SESSION["user"]["addressid"];
+
                                     if (count($addresses) == 0) {
                                         ?>
                                         <option selected value="-1">📌 Add address now 📌</option>
                                         <?php
                                     } else {
-
                                         foreach ($addresses as $index => $address) {
+                                            $isSelected = $address['id'] == $selectedAddressID ? "selected" : "";
                                             $sql = "SELECT * FROM cities WHERE id={$address['cityid']}";
                                             $result = mysqli_query($conn, $sql);
                                             $city = mysqli_fetch_assoc($result);
@@ -88,15 +85,42 @@ $PAGE = isset($_GET['page']) ? $_GET['page'] : "home"; //(isset($_SESSION['page'
                                             $sql = "SELECT * FROM streets WHERE id={$address['streetid']}";
                                             $result = mysqli_query($conn, $sql);
                                             $street = mysqli_fetch_assoc($result);
-
                                             ?>
-
-                                            <option value="<?= $address['id'] ?>">📌
+                                            <option value="<?= $address['id'] ?>" <?= $isSelected ?>>📌
                                                 <?= ($index + 1) . ", " . $street['name'] . ", " . $district['name'] . ", " . $city['name'] ?>
                                             </option>
                                         <?php }
                                     } ?>
                                 </select>
+                                <script>
+                                    $(document).ready(function () {
+                                        $('#selected-address').change(function () {
+                                            var addressid = $(this).val();
+                                            $.ajax({
+                                                type: "POST",
+                                                url: "./api/user/updateaddress.php",
+                                                data: {
+                                                    addressid: addressid
+                                                },
+                                                dataType: 'json',
+                                                success: function (response) {
+                                                    console.log(response)
+                                                    if (response.success) {
+                                                        window.location.href = '?page=profile';
+                                                    } else {
+                                                        console.log(response.error);
+                                                        alert('Login failed:\n' + response.error);
+                                                    }
+                                                },
+                                                error: function (xhr, status, error) {
+                                                    var errorMessage = xhr.responseText ? xhr.responseText : 'Unknown error';
+                                                    console.log(errorMessage); // Log the error message to the console
+                                                    alert('Login failed:\n' + errorMessage);
+                                                }
+                                            });
+                                        });
+                                    });
+                                </script>
                             </div>
 
                         </li>
