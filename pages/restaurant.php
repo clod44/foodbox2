@@ -13,22 +13,30 @@ if (mysqli_num_rows($result) == 0) {
 }
 $restaurant = mysqli_fetch_assoc($result);
 
-if (isset($_POST['favorite-restaurant'])) {
-    //check if we already favorited, if yes, remove it
-    //if no, add it
-    $restaurantid_ = $_POST['favorite-restaurant'];
-    $sql = "SELECT * FROM favoriterestaurants WHERE userid={$_SESSION['user']['id']} AND restaurantid=$restaurantid_";
-    $result = mysqli_query($conn, $sql);
-    if (mysqli_num_rows($result) > 0) {
-        $sql = "DELETE FROM favoriterestaurants WHERE userid={$_SESSION['user']['id']} AND restaurantid=$restaurantid_";
+if (isset($_POST['favorite-restaurant']) && IS_USER_LOGGED_IN()) {
+    if (IS_USER_LOGGED_IN()) {
+        //check if we already favorited, if yes, remove it
+        //if no, add it
+        $restaurantid_ = $_POST['favorite-restaurant'];
+        $sql = "SELECT * FROM favoriterestaurants WHERE userid={$_SESSION['user']['id']} AND restaurantid=$restaurantid_";
         $result = mysqli_query($conn, $sql);
+        if (mysqli_num_rows($result) > 0) {
+            $sql = "DELETE FROM favoriterestaurants WHERE userid={$_SESSION['user']['id']} AND restaurantid=$restaurantid_";
+            $result = mysqli_query($conn, $sql);
+        } else {
+            $sql = "INSERT INTO favoriterestaurants (userid, restaurantid) VALUES({$_SESSION['user']['id']}, $restaurantid_)";
+            $result = mysqli_query($conn, $sql);
+        }
     } else {
-        $sql = "INSERT INTO favoriterestaurants (userid, restaurantid) VALUES({$_SESSION['user']['id']}, $restaurantid_)";
-        $result = mysqli_query($conn, $sql);
+        alert("please login first");
     }
 }
 
 if (isset($_POST["order-food"])) {
+    if (!IS_USER_LOGGED_IN() || $_SESSION['user']['usertype'] == 1) {
+        header("Location: ?page=profile");
+        exit();
+    }
     $foodid = $_POST["order-food"];
 
     $sql = "SELECT * FROM questions WHERE foodid=$foodid";
@@ -117,74 +125,120 @@ $selectedfoodid = $_GET['selectedfoodid'] ?? null;
 
 
 <div class="container p-4">
-    <div class="px-3 d-flex gap-5">
-        <img src="<?= GET_IMAGE($restaurant['image']) ?>" class="rounded shadow"
-            style="height:10rem;width:10rem;object-fit:cover;">
-        <div class="h-100 flex-grow-1">
-            <div class="d-flex justify-content-between align-items-center flex-nowrap">
-                <h2 class="fw-bold text-primary m-0">
-                    <?= $restaurant['name'] ?>
-                </h2>
-                <!--favorite button-->
-                <?php
-                $isRestaurant = $_SESSION['user']['usertype'] == 1;
-                if (!$isRestaurant) {
-                    //check if we favorited
-                    $sql = "SELECT * FROM favoriterestaurants WHERE userid={$_SESSION['user']['id']} AND restaurantid=$restaurantid";
-                    $result = mysqli_query($conn, $sql);
-                    if (mysqli_num_rows($result) > 0) {
-                        $favorited = "";
-                    } else {
-                        $favorited = "outline-";
+    <!--restaurant info-->
+    <div>
+        <div class="px-3 row">
+            <div class="col-12 col-sm-4">
+                <img src="<?= GET_IMAGE($restaurant['image']) ?>" class="rounded shadow w-100"
+                    style="object-fit:cover;">
+            </div>
+            <div class="col-12 col-sm-8">
+                <div class="d-flex justify-content-between align-items-center flex-nowrap w-100">
+                    <h2 class="fw-bold text-primary m-0">
+                        <?= $restaurant['name'] ?>
+                    </h2>
+                    <!--favorite button-->
+                    <?php
+                    $isRestaurant = false;
+                    if (IS_USER_LOGGED_IN())
+                        $isRestaurant = $_SESSION['user']['usertype'] == 1;
+                    if (!$isRestaurant && IS_USER_LOGGED_IN()) {
+                        //check if we favorited
+                        $sql = "SELECT * FROM favoriterestaurants WHERE userid={$_SESSION['user']['id']} AND restaurantid=$restaurantid";
+                        $result = mysqli_query($conn, $sql);
+                        if (mysqli_num_rows($result) > 0) {
+                            $favorited = "";
+                        } else {
+                            $favorited = "outline-";
+                        }
                     }
                     ?>
+
                     <form method="POST">
                         <button class="btn btn-lg btn-<?= $favorited ?>primary btn-shadow p-2 m-2 px-4"
                             name="favorite-restaurant" value="<?= $restaurant['id'] ?>" type="submit">
                             <i class=" bi bi-heart fs-3"></i>
                         </button>
                     </form>
-                    <?php
-                } ?>
+
+
+                </div>
+                <p class="lead fs-6">
+                    <?= $restaurant['description'] ?>
+                </p>
+                <?php
+                //get score average of the comments given to the restaurant
+                $sql = "SELECT avg(comments.score) as avgscore FROM comments, foods WHERE comments.foodid=foods.id AND foods.restaurantid=$restaurantid";
+                $result = mysqli_query($conn, $sql);
+                $avgscore = mysqli_fetch_assoc($result)['avgscore'];
+                ?>
+                <p class="fw-bold"><?= $avgscore != null ? number_format($avgscore, 1) : "??" ?>/5.0⭐</p>
 
             </div>
-            <p class="lead fs-6">
-                <?= $restaurant['description'] ?>
-            </p>
-            <p class="fw-bold">4.2/5⭐(+3000)</p>
-            <div class="accordion accordion-flush p-1 m-0" id="accordionFlushExample">
-                <div class="accordion-item">
-                    <h2 class="accordion-header">
-                        <button class="accordion-button collapsed p-0 m-0 text-primary" type="button"
-                            data-bs-toggle="collapse" data-bs-target="#flush-collapseOne" aria-expanded="false"
-                            aria-controls="flush-collapseOne">
-                            Comments
-                        </button>
-                    </h2>
-                    <div id="flush-collapseOne" class="accordion-collapse collapse"
-                        data-bs-parent="#accordionFlushExample">
-                        <div class="accordion-body">
-                            <div class="p-3 rounded border border-primary d-flex flex-column gap-3"
-                                style="height:15rem;overflow-x:hidden; overflow-y:auto;">
-                                <?php
-                                for ($i = 0; $i < 15; $i++) {
-                                    ?>
-                                    <div class="d-flex flex-column">
-                                        <div class="d-flex justify-content-between">
-                                            <span class="fw-bold">Name Surname <span>- <?= date("d/m/Y"); ?></span></span>
-                                            <span>⭐⭐⭐⭐</span>
-                                        </div>
-                                        <span>Lorem ipsum, dolor sit amet consectetur adipisicing elit. Exercitationem,
-                                            quidem.</span>
-                                        <div class="d-flex justify-content-end">
-                                            <span>- <a href="#" class="fst-italic">Lorem, ipsum.</a></span>
-                                        </div>
-                                    </div>
-                                    <hr>
-                                    <?php
+        </div>
+        <!--comments-->
+        <div class="row accordion accordion-flush p-1 px-3 m-0" id="accordionFlushComment">
+            <div class="accordion-item p-0">
+                <h2 class="accordion-header">
+                    <button class="accordion-button collapsed p-0 m-0 text-primary" type="button"
+                        data-bs-toggle="collapse" data-bs-target="#flush-collapseOne" aria-expanded="false"
+                        aria-controls="flush-collapseOne">
+                        <?php
+                        $sql = "SELECT count(comments.id) FROM comments, foods WHERE comments.foodid=foods.id AND foods.restaurantid=$restaurantid";
+                        $result = mysqli_query($conn, $sql);
+                        $commentCount = mysqli_fetch_assoc($result)['count(comments.id)'];
+                        ?>
+                        Comments (<?= $commentCount ?>)
+                    </button>
+                </h2>
+                <div id="flush-collapseOne" class="accordion-collapse collapse" data-bs-parent="#accordionFlushComment">
+                    <div class="accordion-body px-0">
+                        <div class="p-3 rounded border border-primary d-flex flex-column gap-3"
+                            style="height:15rem;overflow-x:hidden; overflow-y:auto;">
+                            <?php
+                            //fetch comments
+                            $sql = "SELECT comments.* FROM comments, foods WHERE comments.foodid=foods.id AND foods.restaurantid=$restaurantid LIMIT 10";
+                            $result = mysqli_query($conn, $sql);
+                            $comments = mysqli_fetch_all($result, MYSQLI_ASSOC);
+                            foreach ($comments as $comment) {
+                                //fetch user
+                                $sql = "SELECT * FROM users WHERE id={$comment['userid']}";
+                                $result = mysqli_query($conn, $sql);
+                                $user = mysqli_fetch_assoc($result);
+                                //split name and make it like "J*** K***"
+                                $name = $user['name'];
+                                $words = preg_split('/\s+/', $name);
+                                $name = "";
+                                foreach ($words as $word) {
+                                    $name .= substr($word, 0, 1) . "*** ";
                                 }
+
+                                //fetch food
+                                $sql = "SELECT * FROM foods WHERE id={$comment['foodid']}";
+                                $result = mysqli_query($conn, $sql);
+                                $food = mysqli_fetch_assoc($result);
                                 ?>
-                            </div>
+                                <div class="d-flex flex-column">
+                                    <div class="d-flex justify-content-between">
+                                        <span class="fw-bold"><?= $name ?><span>-
+                                                <?= date("d/m/Y", intval($comment['timestamp'])); ?></span></span>
+                                        <span>
+                                            <?php for ($i = 0; $i < $comment['score']; $i++)
+                                                echo "⭐"; ?>
+                                        </span>
+                                    </div>
+                                    <span><?= $comment['comment'] ?></span>
+                                    <div class="d-flex justify-content-end">
+                                        <span>- <a
+                                                href="?page=restaurant&restaurantid=<?= $food['restaurantid'] ?>&selectedfoodid=<?= $food['id'] ?>"
+                                                class="fst-italic"><?= $food['name'] ?></a></span>
+                                    </div>
+                                </div>
+                                <hr>
+                                <?php
+                            }
+                            ?>
+                            <p class="text-center m-0"> <?= $commentCount ?> comments</p>
                         </div>
                     </div>
                 </div>
@@ -196,29 +250,44 @@ $selectedfoodid = $_GET['selectedfoodid'] ?? null;
     <ul class="nav nav-tabs mb-3 sticky-top bg-light" role="tablist">
         <!--menus-->
         <?php
-        for ($i = 0; $i < 5; $i++) { ?>
+        $sql = "SELECT * FROM menus WHERE restaurantid=$restaurantid";
+        $result = mysqli_query($conn, $sql);
+        $menus = mysqli_fetch_all($result, MYSQLI_ASSOC);
+        foreach ($menus as $menu) {
+            ?>
             <li class="nav-item" role="presentation">
-                <a class="nav-link" href="#menu_<?= $i ?>">Menu
-                    <?= $i ?>
-                </a>
+                <a class="nav-link" href="#menu_<?= $menu['id'] ?>"><?= $menu['name'] ?></a>
             </li>
             <?php
         } ?>
     </ul>
 
     <div class="row">
+        <!--yourbox-->
+        <div class="col-12 col-sm-6 col-md-4 mb-3">
+            <div class="d-sm-none">
+                <button class="btn btn-primary w-100 p-0 col-span-12" type="button" data-bs-toggle="collapse"
+                    data-bs-target="#collapseYourbox" aria-expanded="false" aria-controls="collapseYourbox">
+                    Yourbox
+                </button>
+            </div>
+
+            <div class="collapse d-sm-block" id="collapseYourbox">
+                <?php require "./modules/yourbox.php"; ?>
+            </div>
+        </div>
+
         <!--restaurat menu content-->
-        <div class="col d-flex flex-column gap-3">
+        <div class="col col-sm-6 col-md-8 d-flex flex-column gap-3">
             <?php
-            for ($i = 0; $i < 5; $i++) { ?>
-                <div id="menu_<?= $i ?>">
-                    <h3 class="mb-3">🍔 Menu
-                        <?= $i ?>
+            foreach ($menus as $menu) {
+                ?>
+                <div id="menu_<?= $menu['id'] ?>">
+                    <h3 class="mb-3"><?= $menu['name'] ?> - <span class="h5"><?= $menu['description'] ?></span>
                     </h3>
                     <div class="row align-items-start justify-content-around rounded p-2">
                         <?php
-                        //for now, keep fetching all the foods
-                        $sql = "SELECT * FROM foods WHERE restaurantid=$restaurantid AND onlyextra=0";
+                        $sql = "SELECT foods.* FROM foods, menus, menufoods WHERE foods.id=menufoods.foodid AND menus.id=menufoods.menuid AND menus.id={$menu['id']} AND menus.restaurantid=$restaurantid";
                         $result = mysqli_query($conn, $sql);
                         $foods = mysqli_fetch_all($result, MYSQLI_ASSOC);
                         foreach ($foods as $food) {
@@ -253,27 +322,18 @@ $selectedfoodid = $_GET['selectedfoodid'] ?? null;
                 <hr class="border-primary">
                 <?php
             } ?>
-
         </div>
-
-        <!--your food box-->
-        <?php require "./modules/yourbox.php" ?>
     </div>
 
 </div>
-
-
-
 <script>
-
     $(document).ready(function () {
-        // Event listener for the button to trigger dynamic modal
         $('.food').click(function () {
             var foodid = $(this).data('food-id');
             ShowFoodModalFromID(foodid);
         });
-
         function ShowFoodModalFromID(foodid) {
+            console.log("amongus");
             var food = null;
             //get food info from endpoint
             $.ajax({
@@ -282,7 +342,7 @@ $selectedfoodid = $_GET['selectedfoodid'] ?? null;
                 data: {
                     foodid: foodid
                 },
-                dataType: 'json', // Specify JSON dataType to automatically parse response as JSON
+                dataType: 'json',
                 success: function (response) {
                     console.log(response);
                     if (response.success) {
@@ -298,7 +358,7 @@ $selectedfoodid = $_GET['selectedfoodid'] ?? null;
                 },
                 error: function (xhr, status, error) {
                     var errorMessage = xhr.responseText ? JSON.parse(xhr.responseText).error : 'Unknown error';
-                    console.log(errorMessage); // Log the error message to the console
+                    console.log(errorMessage);
                     alert('query failed:\n' + errorMessage);
                 }
             });
@@ -321,7 +381,7 @@ $selectedfoodid = $_GET['selectedfoodid'] ?? null;
                 },
                 error: function (xhr, status, error) {
                     var errorMessage = xhr.responseText ? JSON.parse(xhr.responseText).error : 'Unknown error';
-                    console.log(errorMessage); // Log the error message to the console
+                    console.log(errorMessage);
                     alert('query failed:\n' + errorMessage);
                 }
             });
@@ -372,10 +432,7 @@ $selectedfoodid = $_GET['selectedfoodid'] ?? null;
                 });
 
             });
-
-            // Create an instance of ModalCreator
             const modal = new ModalCreator("Viewing: " + food['name'], modalData, "Add to Cart", "?page=restaurant&restaurantid=" + food['restaurantid'], "order-food", food['id']);
-            // Show the modal
             modal.show();
         }
 

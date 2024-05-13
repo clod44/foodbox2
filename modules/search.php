@@ -22,20 +22,20 @@
                     console.log(response);
                     if (response.success) {
                         console.log("Food retrieved");
-                        var foodsAndRestaurantDetails = response.foodAndRestaurantDetails;
-                        if (Array.isArray(foodsAndRestaurantDetails)) {
-                            foodsAndRestaurantDetails.forEach(function (foodAndRestaurantDetail) {
-                                GenerateSearchResult(foodAndRestaurantDetail);
+                        var foods = response.foods;
+                        if (Array.isArray(foods)) {
+                            foods.forEach(function (food) {
+                                GenerateSearchResult(food);
                             });
                         } else {
-                            console.log("foodsAndRestaurantDetails is not an array:", foodsAndRestaurantDetails);
+                            console.log("foods is not an array:", foods);
                         }
                     } else {
                         console.log("Error:", response.error);
                     }
                 },
                 error: function (xhr, status, error) {
-                    var errorMessage = xhr.responseText ? JSON.parse(xhr.responseText).error : 'Unknown error';
+                    var errorMessage = xhr.responseText ? xhr.responseText : 'Unknown error';
                     console.log("Error:", errorMessage);
                     alert('An error occurred:\n' + errorMessage);
                 }

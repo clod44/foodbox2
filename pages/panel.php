@@ -27,6 +27,9 @@ $PANEL = isset($_GET['panel']) ? $_GET['panel'] : 'orders';
     <li class="nav-item">
         <a class="nav-link <?= $PANEL == 'details' ? ' active' : ''; ?>" href="?page=panel&panel=details">Details</a>
     </li>
+    <li class="nav-item">
+        <a class="nav-link <?= $PANEL == 'editmenu' ? ' active' : ''; ?>" href="?page=panel&panel=editmenu">Menus</a>
+    </li>
 </ul>
 <?php
 

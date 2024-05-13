@@ -11,8 +11,7 @@ function GenerateSearchResult(food) {
                     <h5 class='card-title m-0 p-0 fw-bold'>
                         ${food['name']}
                     </h5>
-                    <!--TODO:implement food rating-->
-                    <h5 class='card-title m-0 p-0'>4.9⭐</h5>
+                    <h5 class='card-title m-0 p-0'>${parseFloat(food['score']).toFixed(1)}⭐</h5>
                 </div>
                 <hr class='p-0 m-0 border-primary'>
                     <p class='card-text fs-7 p-0 m-0' style='height:3.2em;overflow-y:hidden;'>
@@ -32,7 +31,10 @@ function GenerateSearchResult(food) {
         $('#search-results-container').append(searchResutHtml); // Append the generated HTML to the search-result-container
     };
 
-    GetRestaurant(food['id'], restaurantCallback);
+    GetScore(food['id'], (score) => {
+        food['score'] = score;
+        GetRestaurant(food['id'], restaurantCallback);
+    });
 }
 function GetRestaurant(foodid, callback) {
     $.ajax({
@@ -51,8 +53,31 @@ function GetRestaurant(foodid, callback) {
             }
         },
         error: function (xhr, status, error) {
-            var errorMessage = xhr.responseText ? JSON.parse(xhr.responseText).error : 'Unknown error';
-            console.log(errorMessage); // Log the error message to the console
+            var errorMessage = xhr.responseText ? xhr.responseText : 'Unknown error';
+            console.log(errorMessage);
+            alert('query failed:\n' + errorMessage);
+        }
+    });
+}
+function GetScore(foodid, callback) {
+    $.ajax({
+        type: "GET",
+        url: "./api/food/getscore.php",
+        data: {
+            foodid: foodid
+        },
+        dataType: 'json',
+        success: function (response) {
+            console.log(response);
+            if (response.success) {
+                callback(response.score);
+            } else {
+                console.log("Error:", response.error);
+            }
+        },
+        error: function (xhr, status, error) {
+            var errorMessage = xhr.responseText ? xhr.responseText : 'Unknown error';
+            console.log(errorMessage);
             alert('query failed:\n' + errorMessage);
         }
     });

@@ -30,18 +30,20 @@ if (isset($_POST["delete-orderdetail"])) {
 }
 
 //check if there is an order with this restaurant
-$sql = "SELECT * FROM orders WHERE userid={$_SESSION['user']['id']} AND orderconfirmed=0 LIMIT 1";
-$result = mysqli_query($conn, $sql);
-$order = mysqli_fetch_assoc($result);
-
+$order = null;
+if (IS_USER_LOGGED_IN()) {
+    $sql = "SELECT * FROM orders WHERE userid={$_SESSION['user']['id']} AND orderconfirmed=0 LIMIT 1";
+    $result = mysqli_query($conn, $sql);
+    $order = mysqli_fetch_assoc($result);
+}
 
 
 
 
 ?>
 
-<div class="col-4 m-0 p-0">
-    <div class="ms-3 flex-grow-1 border border-primary rounded shadow p-4">
+<div class="w-100 m-0 p-0">
+    <div class="flex-grow-1 border border-primary rounded shadow p-4">
         <h3 class="m-0 p-0 text-center mb-2">📦 Your Box 📦</h3>
         <hr class="p-0 m-2 border-primary">
         <div class="rounded w-100 mb-2" style="height:20rem;overflow-x:hidden; overflow-y:auto;">
@@ -61,8 +63,9 @@ $order = mysqli_fetch_assoc($result);
                     $food = mysqli_fetch_assoc($result);
 
                     ?>
-                    <div class="d-flex flex-nowrap p-1 gap-2 align-items-start">
-                        <img src="<?= GET_IMAGE($food['image']) ?>" class="rounded shadow" style="height:3rem;">
+                    <div class="d-flex flex-wrap p-1 gap-2 align-items-start">
+                        <img src="<?= GET_IMAGE($food['image']) ?>" class="rounded shadow w-100"
+                            style="height:3rem; object-fit: cover;">
                         <div class="d-flex flex-column flex-grow-1"> <!-- Added flex-grow-1 class -->
                             <div class="d-flex justify-content-between align-items-start">
                                 <p class="m-0 p-0 fs-6 fw-bold"><?= $food['name'] ?></p>
@@ -151,7 +154,12 @@ $order = mysqli_fetch_assoc($result);
         </div>
         <div class="d-flex flex-nowrap justify-content-between align-items-center mb-3">
             <p class="m-0 p-0">Total:</p>
-            <p class="m-0 p-0 fw-bold">$<?= FixedDecimal(GET_BOX_PRICE($_SESSION["user"]["id"])) ?></p>
+            <?php
+            $total = 0;
+            if (IS_USER_LOGGED_IN())
+                $total = GET_BOX_PRICE($_SESSION["user"]["id"]);
+            ?>
+            <p class="m-0 p-0 fw-bold">$<?= FixedDecimal($total) ?></p>
         </div>
         <a href="?page=checkout" class="btn btn-lg w-100 btn-primary btn-shadow">
             Confirm the Box ✅

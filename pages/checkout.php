@@ -10,11 +10,16 @@ if (!IS_USER_LOGGED_IN()) {
 if (isset($_POST["order-confirm"])) {
     $orderid = $_POST["order-confirm"];
     $addressid = $_POST["addressid"];
-    //update the order's "orderconfirmed" to 1 and addressid to $addressid
-    $sql = "UPDATE orders SET orderconfirmed=1, addressid=$addressid WHERE id=$orderid";
-    $result = mysqli_query($conn, $sql);
-    if (!$result) {
-        alert("Error confirming order: " . mysqli_error($conn));
+    if ($addressid == -1) {
+        alert("Please select an address.");
+    } else {
+
+        //update the order's "orderconfirmed" to 1 and addressid to $addressid
+        $sql = "UPDATE orders SET orderconfirmed=1, addressid=$addressid WHERE id=$orderid";
+        $result = mysqli_query($conn, $sql);
+        if (!$result) {
+            alert("Error confirming order: " . mysqli_error($conn));
+        }
     }
 }
 if (isset($_POST["delete-orderdetail"])) {
@@ -56,7 +61,7 @@ $isEmpty = false;
     ?>
 
     <!--this code is a bit different than the yourbox.php's html-->
-    <div class="">
+    <div>
         <div class="ms-3 flex-grow-1 border border-primary rounded shadow p-4">
             <h3 class="m-0 p-0 text-center mb-2">📦 Your Box 📦</h3>
             <hr class="p-0 m-2 border-primary">
@@ -77,9 +82,10 @@ $isEmpty = false;
                         $food = mysqli_fetch_assoc($result);
 
                         ?>
-                        <div class="d-flex flex-nowrap p-1 gap-2 align-items-start">
-                            <img src="<?= GET_IMAGE($food['image']) ?>" class="rounded shadow" style="height:3rem;">
-                            <div class="d-flex flex-column flex-grow-1"> <!-- Added flex-grow-1 class -->
+                        <div class="d-flex flex-wrap p-1 gap-2 align-items-start">
+                            <img src="<?= GET_IMAGE($food['image']) ?>" class="rounded shadow w-100"
+                                style="height:10rem; object-fit:cover;">
+                            <div class="d-flex flex-column flex-grow-1">
                                 <div class="d-flex justify-content-between align-items-start">
                                     <p class="m-0 p-0 fs-6 fw-bold"><?= $food['name'] ?></p>
                                     <form action="" method="post">
@@ -115,8 +121,8 @@ $isEmpty = false;
                                         $result = mysqli_query($conn, $sql);
                                         $answers = mysqli_fetch_all($result, MYSQLI_ASSOC);
                                         ?>
-                                        <ul class="m-0 mb-2">
-                                            <ul>
+                                        <ul class="m-0 mb-2 ps-2">
+                                            <ul class="ps-2">
                                                 <p class="fs-7 m-0"><span class="fw-bold fs-6"><?= $question['title'] ?></span>
                                                     <?= $question['text'] ?>
                                                 </p>
@@ -177,7 +183,7 @@ $isEmpty = false;
             </div>
 
             <form action="" method="post">
-                <div class="input-group input-group-lg flex-nowrap align-items-center h-100">
+                <div class="input-group input-group-lg flex-wrap align-items-center h-100">
                     <span class="input-group-text">Teslim adresi:</span>
                     <select class="form-select text-center" name="addressid">
                         <?php
@@ -193,25 +199,14 @@ $isEmpty = false;
 
                         if (count($addresses) == 0) {
                             ?>
-                            <option selected value=" -1">📌 Add address now 📌</option>
+                            <option selected value=" -1">📌 Add an addresses from your profile! 📌</option>
                             <?php
                         } else {
                             foreach ($addresses as $index => $address) {
                                 $isSelected = $address['id'] == $selectedAddressID ? "selected" : "";
-                                $sql = "SELECT * FROM cities WHERE id={$address['cityid']}";
-                                $result = mysqli_query($conn, $sql);
-                                $city = mysqli_fetch_assoc($result);
-
-                                $sql = "SELECT * FROM districts WHERE id={$address['districtid']}";
-                                $result = mysqli_query($conn, $sql);
-                                $district = mysqli_fetch_assoc($result);
-
-                                $sql = "SELECT * FROM streets WHERE id={$address['streetid']}";
-                                $result = mysqli_query($conn, $sql);
-                                $street = mysqli_fetch_assoc($result);
                                 ?>
-                                <option value="<?= $address['id'] ?>" <?= $isSelected ?>>📌
-                                    <?= ($index + 1) . ", " . $street['name'] . ", " . $district['name'] . ", " . $city['name'] ?>
+                                <option value="<?= $address['id'] ?>" <?= $isSelected ?>>
+                                    <?= ($index + 1) . GET_ADDRESS_TEXT($address['id']) ?>
                                 </option>
                             <?php }
                         } ?>
@@ -229,4 +224,6 @@ $isEmpty = false;
             </form>
         </div>
     </div>
+
+
 </div>

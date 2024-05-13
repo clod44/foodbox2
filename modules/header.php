@@ -33,7 +33,7 @@ $PAGE = isset($_GET['page']) ? $_GET['page'] : "home"; //(isset($_SESSION['page'
 
 <body>
 
-    <nav class="bg-light shadow navbar navbar-expand-md p-0 px-4  border-top border-start border-end">
+    <nav class="bg-light shadow navbar navbar-expand-md p-0 px-md-4  border-top border-start border-end">
         <div class="container-fluid">
             <a class="navbar-brand d-flex justify-content-center align-items-center hover-scale" href="./">
                 <span class="p-0 m-0" style="font-size:3rem;">📦</span>
@@ -69,25 +69,14 @@ $PAGE = isset($_GET['page']) ? $_GET['page'] : "home"; //(isset($_SESSION['page'
 
                                     if (count($addresses) == 0) {
                                         ?>
-                                        <option selected value="-1">📌 Add address now 📌</option>
+                                        <option selected value="-1">📌 Add an addresses from your profile! 📌</option>
                                         <?php
                                     } else {
                                         foreach ($addresses as $index => $address) {
                                             $isSelected = $address['id'] == $selectedAddressID ? "selected" : "";
-                                            $sql = "SELECT * FROM cities WHERE id={$address['cityid']}";
-                                            $result = mysqli_query($conn, $sql);
-                                            $city = mysqli_fetch_assoc($result);
-
-                                            $sql = "SELECT * FROM districts WHERE id={$address['districtid']}";
-                                            $result = mysqli_query($conn, $sql);
-                                            $district = mysqli_fetch_assoc($result);
-
-                                            $sql = "SELECT * FROM streets WHERE id={$address['streetid']}";
-                                            $result = mysqli_query($conn, $sql);
-                                            $street = mysqli_fetch_assoc($result);
                                             ?>
-                                            <option value="<?= $address['id'] ?>" <?= $isSelected ?>>📌
-                                                <?= ($index + 1) . ", " . $street['name'] . ", " . $district['name'] . ", " . $city['name'] ?>
+                                            <option value="<?= $address['id'] ?>" <?= $isSelected ?>>
+                                                <?= ($index + 1) . GET_ADDRESS_TEXT($address['id']) ?>
                                             </option>
                                         <?php }
                                     } ?>
@@ -124,15 +113,41 @@ $PAGE = isset($_GET['page']) ? $_GET['page'] : "home"; //(isset($_SESSION['page'
                             </div>
 
                         </li>
-                    <?php } ?>
-                    <li class="nav-item hover-scale align-items-center justify-content-center d-flex">
-                        <a class="nav-link text-nowrap <?php echo ($PAGE == "home" ? "active fw-bold" : ""); ?>"
-                            href="./">Home</a>
-                    </li>
+                    <?php } /*?>
+        <li class="nav-item hover-scale align-items-center justify-content-center d-flex">
+            <a class="nav-link text-nowrap <?php echo ($PAGE == "home" ? "active fw-bold" : ""); ?>"
+                href="./">Home</a>
+        </li>
+        <?php */
+                    if ((IS_USER_LOGGED_IN() && $_SESSION['user']['usertype'] != 1)) {
+                        //for users which are not restaurant
+                        //fetch orders which have 0,1 or 2 status
+                        $sql = "SELECT count(id) FROM orders WHERE userid={$_SESSION['user']['id']} AND status IN (0,1,2) AND orderconfirmed=1";
+                        $result = mysqli_query($conn, $sql);
+                        $orderCount = mysqli_fetch_assoc($result)['count(id)'];
+                    }
+                    ?>
                     <li class="nav-item hover-scale align-items-center justify-content-center d-flex">
                         <a class="nav-link text-nowrap <?php echo ($PAGE == "orderhistory" ? "active fw-bold" : ""); ?>"
-                            href="?page=orderhistory">My📦</a>
+                            href="?page=orderhistory"><?= ($orderCount ?? 0) > 0 ? (
+                                "<div class='spinner-grow spinner-grow-sm text-primary' role='status'>
+                                    <span class='visually-hidden'>Loading...</span>
+                                </div>") : "" ?>History📜</a>
                     </li>
+                    <?php
+                    if ((IS_USER_LOGGED_IN() && $_SESSION['user']['usertype'] != 1)) {
+                        //for users which are not restaurant
+                        $sql = "SELECT count(id) FROM orders WHERE userid={$_SESSION['user']['id']} AND orderconfirmed=0";
+                        $result = mysqli_query($conn, $sql);
+                        $boxItemsCount = mysqli_fetch_assoc($result)['count(id)'];
+                    }
+                    ?>
+                    <li class="nav-item hover-scale align-items-center justify-content-center d-flex">
+                        <a class="nav-link text-nowrap <?php echo ($PAGE == "checkout" ? "active fw-bold" : ""); ?>"
+                            href="?page=checkout"><?= ($boxItemsCount ?? 0) > 0 ? (
+                                "<span class='badge text-bg-primary'>" . $boxItemsCount . "</span>") : "" ?>My📦</a>
+                    </li>
+
                     <li class="nav-item hover-scale text-center align-items-center">
                         <?php
                         if (isset($_SESSION['user'])) {

@@ -82,17 +82,27 @@
 
         $("#filter-form").submit(function (event) {
             event.preventDefault();
-            var formData = $(this).serialize();
+            var formData = $(this).serializeArray();
+            console.log(formData);
+            var requestData = [];
+            formData.forEach(function (item) {
+                requestData[item.name] = item.value;
+            })
+            requestData["page"] = <?= $_SESSION['pagination']['page'] ?>;
+            requestData["perpage"] = <?= $_SESSION['pagination']['perpage'] ?>;
+            console.log(requestData);
             ClearSearchResults();
             $.ajax({
                 type: "GET",
                 url: "./api/food/query.php",
-                data: formData,
-                dataType: 'json', // Specify JSON dataType to automatically parse response as JSON
+                data: {
+                    ...requestData
+                },
+                dataType: 'json',
                 success: function (response) {
+                    console.log("====");
                     console.log(response.echo)
                     if (response.success) {
-
                         let foods = response.foods;
                         if (Array.isArray(foods)) {
                             foods.forEach(function (food) {
@@ -100,13 +110,13 @@
                             });
                         }
                     } else {
-                        console.log(response.error); // Log the error message to the console
+                        console.log(response.error);
                         alert('filter failed:\n' + response.error);
                     }
                 },
                 error: function (xhr, status, error) {
                     var errorMessage = xhr.responseText ? xhr.responseText : 'Unknown error';
-                    console.log(errorMessage); // Log the error message to the console
+                    console.log(errorMessage);
                     alert('filter failed:\n' + errorMessage);
                 }
             });

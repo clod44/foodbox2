@@ -4,9 +4,11 @@ require_once "../../utils/db.php";
 require_once "../../utils/helpers.php";
 
 if ($_SERVER["REQUEST_METHOD"] == "GET") {
+    //savelog(implode(", ", $_GET));
     // Base SQL query
     $sql = "SELECT foods.* FROM foods, restaurants " .
         (isset($_GET["categories"]) ? ", foodcategories" : "") .
+        (isset($_GET["favorites-only"]) ? ", favoriterestaurants" : "") .
         " WHERE foods.restaurantid = restaurants.id" .
         (isset($_GET["restaurantid"]) ? " AND foods.restaurantid={$_GET['restaurantid']} " : "");
 
@@ -25,6 +27,9 @@ if ($_SERVER["REQUEST_METHOD"] == "GET") {
     if (isset($_GET['price-min'])) {
         $priceMin = (float) $_GET['price-min'];
         $conditions[] = "foods.price >= $priceMin";
+    }
+    if (isset($_GET['favorites-only'])) {
+        $conditions[] = "favoriterestaurants.userid = {$_SESSION['user']['id']} AND favoriterestaurants.restaurantid = foods.restaurantid";
     }
     if (isset($_GET['keywords'])) {
         $keywords = '%' . $_GET['keywords'] . '%';
@@ -58,6 +63,13 @@ if ($_SERVER["REQUEST_METHOD"] == "GET") {
         $sortType = $_GET['sort-type'] == "price" ? "price" : "food_name";
         $sql .= " ORDER BY $sortType $sortDir";
     }
+
+    //pagination
+    $p = isset($_GET['page']) ? $_GET['page'] : 0;
+    $perpage = isset($_GET['perpage']) ? $_GET['perpage'] : 10;
+    $sql .= " LIMIT " . ($p * $perpage) . ", $perpage";
+
+
     $result = mysqli_query($conn, $sql);
     $foods = mysqli_fetch_all($result, MYSQLI_ASSOC);
 

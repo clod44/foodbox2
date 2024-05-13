@@ -27,15 +27,11 @@ function FixedDecimal($number, $digits = 2)
 
 function savelog($message)
 {
-    $logFile = __DIR__ . '/debug.log';  // Path to debug.log in the root directory
+    $logFile = __DIR__ . '/debug.log';
+    $timestamp = date('Y-m-d H:i:s');
+    $formattedTimestamp = "[" . $timestamp . "]";
 
-    $timestamp = date('Y-m-d H:i:s');  // Current date and time in a readable format
-    $formattedTimestamp = "[" . $timestamp . "]";  // Format the timestamp as desired
-
-    // Prepare the log entry with timestamp and message
     $logEntry = $formattedTimestamp . " - " . $message . PHP_EOL;
-
-    // Append the log entry to the debug.log file
     file_put_contents($logFile, $logEntry, FILE_APPEND);
 }
 
@@ -72,38 +68,37 @@ function UPLOAD_IMAGE($uploadedFileName, $newFileNamePrefix, $callback)
 
     $check = getimagesize($_FILES["file"]["tmp_name"]);
     if ($check !== false) {
-        echo "File is an image - " . $check["mime"] . ".";
+        //alert("File is an - " . $check["mime"] . ".");
         $uploadOk = 1;
     } else {
-        echo "File is not an image.";
+        alert("File is not an image.");
         $uploadOk = 0;
     }
-    if (file_exists($target_file)) {
-        echo "Sorry, file already exists. try again.";
+    if (file_exists($target_file)) { // this isn't supposed to happen
+        alert("Sorry, file already exists. try again.");
         $uploadOk = 0;
     }
     if ($_FILES["file"]["size"] > 500000) {
-        echo "Sorry, your file is too large.";
+        alert("Sorry, your file is too large.");
         $uploadOk = 0;
     }
     if (
         $imageFileType != "jpg" && $imageFileType != "png" && $imageFileType != "jpeg"
-        && $imageFileType != "gif"
     ) {
-        echo "Sorry, only JPG, JPEG, PNG & GIF files are allowed.";
+        alert("Sorry, only JPG, JPEG, PNG files are allowed.");
         $uploadOk = 0;
     }
     if ($uploadOk == 0) {
-        echo "Sorry, your file was not uploaded.";
+        alert("Sorry, your file was not uploaded. kill yourself.");
     } else {
         if (move_uploaded_file($_FILES["file"]["tmp_name"], $target_file)) {
-            echo "The file " . htmlspecialchars(basename($_FILES["file"]["name"])) . " has been uploaded.";
+            alert("The file " . htmlspecialchars(basename($_FILES["file"]["name"])) . " has been uploaded.");
 
-            // Invoke the callback function with necessary arguments
+            // invoke the callback function with necessary arguments
             $callback($newFileName, $target_dir);
 
         } else {
-            echo "Sorry, there was an error uploading your file.";
+            alert("Sorry, there was an error uploading your file.");
         }
     }
 }
@@ -197,4 +192,36 @@ function UPDATE_BOX_PRICES()
     }
 }
 
+function GET_ADDRESS_TEXT($addressid)
+{
+    global $conn;
+    $sql = "SELECT * FROM addresses WHERE id=$addressid";
+    $result = mysqli_query($conn, $sql);
+    $address = mysqli_fetch_assoc($result);
+    if ($address == null) {
+        return "⚠️ address not found ⚠️";
+    }
+    $streetid = $address['streetid'];
+    $districtid = $address['districtid'];
+    $cityid = $address['cityid'];
+
+    $sql = "SELECT * FROM cities WHERE id=$cityid";
+    $result = mysqli_query($conn, $sql);
+    $city = mysqli_fetch_assoc($result);
+
+    $sql = "SELECT * FROM districts WHERE id=$districtid";
+    $result = mysqli_query($conn, $sql);
+    $district = mysqli_fetch_assoc($result);
+
+    $sql = "SELECT * FROM streets WHERE id=$streetid";
+    $result = mysqli_query($conn, $sql);
+    $street = mysqli_fetch_assoc($result);
+
+    $cityName = $city['name'] ?? 'not found';
+    $districtName = $district['name'] ?? 'not found';
+    $streetName = $street['name'] ?? 'not found';
+
+
+    return "📌 " . $streetName . ", " . $districtName . ", " . $cityName;
+}
 ?>

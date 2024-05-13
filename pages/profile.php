@@ -135,6 +135,13 @@ if (!IS_USER_LOGGED_IN()) {
                                     <a href="?page=panel" class="col btn btn-warning hover-scale" type="button"> Control
                                         Panel ⚙️</a>
                                     <?php
+                                } else {
+                                    ?>
+                                    <a href="?page=orderhistory" class="col btn btn-dark hover-scale" type="button">
+                                        History 🛒</a>
+                                    <a href="?page=checkout" class="col btn btn-outline-primary hover-scale" type="button">
+                                        My 📦</a>
+                                    <?php
                                 }
                                 ?>
                             </div>
@@ -161,50 +168,52 @@ if (!IS_USER_LOGGED_IN()) {
                             echo "<p>No address found</p>";
                         } else {
                             ?>
-                            <table class="table">
-                                <thead>
-                                    <tr>
-                                        <th scope="col">#</th>
-                                        <th scope="col">Name</th>
-                                        <th scope="col">City</th>
-                                        <th scope="col">District</th>
-                                        <th scope="col">Street</th>
-                                        <th scope="col">✈️</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <?php
-                                    foreach ($addresses as $index => $address) {
-                                        $sql = "SELECT * FROM cities WHERE id={$address['cityid']}";
-                                        $result = mysqli_query($conn, $sql);
-                                        $city = mysqli_fetch_assoc($result);
-
-                                        $sql = "SELECT * FROM districts WHERE id={$address['districtid']}";
-                                        $result = mysqli_query($conn, $sql);
-                                        $district = mysqli_fetch_assoc($result);
-
-                                        $sql = "SELECT * FROM streets WHERE id={$address['streetid']}";
-                                        $result = mysqli_query($conn, $sql);
-                                        $street = mysqli_fetch_assoc($result);
-
-                                        ?>
+                            <div style="overflow-x:auto">
+                                <table class="table w-100">
+                                    <thead>
                                         <tr>
-                                            <th scope="row"><?= $index + 1 ?></th>
-                                            <td><?= $address['name'] ?></td>
-                                            <td><?= $city['name'] ?></td>
-                                            <td><?= $district['name'] ?></td>
-                                            <td><?= $street['name'] ?></td>
-                                            <td>
-                                                <form method="POST">
-                                                    <button type="submit" name="delete-address" value="<?= $address['id'] ?>"
-                                                        class="btn btn-sm btn-danger hover-scale btn-shadow">🗑️</button>
-                                                </form>
-                                            </td>
+                                            <th scope="col">#</th>
+                                            <th scope="col">Name</th>
+                                            <th scope="col">City</th>
+                                            <th scope="col">District</th>
+                                            <th scope="col">Street</th>
+                                            <th scope="col">✈️</th>
                                         </tr>
+                                    </thead>
+                                    <tbody>
                                         <?php
-                                    } ?>
-                                </tbody>
-                            </table>
+                                        foreach ($addresses as $index => $address) {
+                                            $sql = "SELECT * FROM cities WHERE id={$address['cityid']}";
+                                            $result = mysqli_query($conn, $sql);
+                                            $city = mysqli_fetch_assoc($result);
+
+                                            $sql = "SELECT * FROM districts WHERE id={$address['districtid']}";
+                                            $result = mysqli_query($conn, $sql);
+                                            $district = mysqli_fetch_assoc($result);
+
+                                            $sql = "SELECT * FROM streets WHERE id={$address['streetid']}";
+                                            $result = mysqli_query($conn, $sql);
+                                            $street = mysqli_fetch_assoc($result);
+
+                                            ?>
+                                            <tr>
+                                                <th scope="row"><?= $index + 1 ?></th>
+                                                <td><?= $address['name'] ?></td>
+                                                <td><?= $city['name'] ?></td>
+                                                <td><?= $district['name'] ?></td>
+                                                <td><?= $street['name'] ?></td>
+                                                <td>
+                                                    <form method="POST">
+                                                        <button type="submit" name="delete-address" value="<?= $address['id'] ?>"
+                                                            class="btn btn-sm btn-danger hover-scale btn-shadow">🗑️</button>
+                                                    </form>
+                                                </td>
+                                            </tr>
+                                            <?php
+                                        } ?>
+                                    </tbody>
+                                </table>
+                            </div>
                             <?php
                         } ?>
                         <h2>Add address:</h2>
@@ -250,20 +259,19 @@ if (!IS_USER_LOGGED_IN()) {
                 $.ajax({
                     type: "POST",
                     url: "./api/user/logout.php",
+                    dataType: "json",
                     success: function (response) {
-                        console.log(response)
-                        response = JSON.parse(response); // Parse the response to JSON
                         console.log(response)
                         if (response.success) {
                             window.location.href = '?page=profile&refresh=1';
                         } else {
-                            console.log(response.error); // Log the error message to the console
+                            console.log(response.error);
                             alert('logout failed:\n' + response.error);
                         }
                     },
                     error: function (xhr, status, error) {
-                        var errorMessage = xhr.responseText ? JSON.parse(xhr.responseText).error : 'Unknown error';
-                        console.log(errorMessage); // Log the error message to the console
+                        var errorMessage = xhr.responseText ? xhr.responseText : 'Unknown error';
+                        console.log(errorMessage);
                         alert('logout failed:\n' + errorMessage);
                     }
                 });
@@ -290,46 +298,35 @@ if (!IS_USER_LOGGED_IN()) {
                     type: "POST",
                     url: "./api/user/update.php",
                     data: newData,
+                    dataType: "json",
                     success: function (response) {
-                        console.log(response)
-                        response = JSON.parse(response); // Parse the response to JSON
                         console.log(response)
                         if (response.success) {
                             alert("succesful");
                             window.location.href = '?page=profile&refresh=1';
                         } else {
-                            console.log(response.error); // Log the error message to the console
+                            console.log(response.error);
                             alert('update failed:\n' + response.error);
                         }
                     },
                     error: function (xhr, status, error) {
-                        var errorMessage = xhr.responseText ? JSON.parse(xhr.responseText).error : 'Unknown error';
-                        console.log(errorMessage); // Log the error message to the console
+                        var errorMessage = xhr.responseText ? xhr.responseText : 'Unknown error';
+                        console.log(errorMessage);
                         alert('update failed:\n' + errorMessage);
                     }
                 });
             });
 
             $('#pfp-upload-form').on('change', '.file-input', function () {
-                // Get selected file
+                //this previews the to-be-uploaded-image
                 const file = this.files[0];
-
-                // Find the preview image within the same form
                 const form = $(this).closest('form');
                 const previewImage = form.find('img');
-
-                // Check if file is selected and is an image
                 if (file && file.type.startsWith('image')) {
-                    // Create a FileReader instance
                     const reader = new FileReader();
-
-                    // Set onload event handler
                     reader.onload = function (e) {
-                        // Update the src attribute of the preview image to the loaded image data
                         previewImage.attr('src', e.target.result);
                     };
-
-                    // Read the selected file as Data URL (base64 string)
                     reader.readAsDataURL(file);
                 }
             });
@@ -369,7 +366,7 @@ if (!IS_USER_LOGGED_IN()) {
                     },
                     error: function (xhr, status, error) {
                         var errorMessage = xhr.responseText ? xhr.responseText : 'Unknown error';
-                        console.log("Error:", errorMessage); // Log the error message to the console
+                        console.log("Error:", errorMessage);
                         alert('An error occurred:\n' + errorMessage);
                     }
                 });
@@ -398,7 +395,7 @@ if (!IS_USER_LOGGED_IN()) {
                     },
                     error: function (xhr, status, error) {
                         var errorMessage = xhr.responseText ? xhr.responseText : 'Unknown error';
-                        console.log("Error:", errorMessage); // Log the error message to the console
+                        console.log("Error:", errorMessage);
                         alert('An error occurred:\n' + errorMessage);
                     }
                 });
