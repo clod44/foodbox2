@@ -197,7 +197,7 @@ $selectedfoodid = $_GET['selectedfoodid'] ?? null;
                             style="height:15rem;overflow-x:hidden; overflow-y:auto;">
                             <?php
                             //fetch comments
-                            $sql = "SELECT comments.* FROM comments, foods WHERE comments.foodid=foods.id AND foods.restaurantid=$restaurantid LIMIT 10";
+                            $sql = "SELECT comments.* FROM comments, foods WHERE comments.foodid=foods.id AND foods.restaurantid=$restaurantid ORDER BY comments.id DESC";
                             $result = mysqli_query($conn, $sql);
                             $comments = mysqli_fetch_all($result, MYSQLI_ASSOC);
                             foreach ($comments as $comment) {
@@ -221,7 +221,7 @@ $selectedfoodid = $_GET['selectedfoodid'] ?? null;
                                 <div class="d-flex flex-column">
                                     <div class="d-flex justify-content-between">
                                         <span class="fw-bold"><?= $name ?><span>-
-                                                <?= date("d/m/Y", intval($comment['timestamp'])); ?></span></span>
+                                                <?= $comment['timestamp'] ?></span></span>
                                         <span>
                                             <?php for ($i = 0; $i < $comment['score']; $i++)
                                                 echo "⭐"; ?>

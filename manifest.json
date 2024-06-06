@@ -1,0 +1,10 @@
+{
+    "name": "My PWA",
+    "icons": [
+        {
+            "src": "./favicon.ico",
+            "type": "image/x-icons",
+            "sizes": "48x48"
+        }
+    ]
+}

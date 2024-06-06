@@ -1,22 +1,24 @@
 <?php
 if (!IS_USER_LOGGED_IN()) {
     require "./modules/login.php";
+} else if ($_SESSION['user']['usertype'] == 1) {
+    echo "<p class='text-center lead py-5 my-5' >you cant access here</p>";
 } else {
     ?>
-    <div class="container px-4 mt-4">
-        <!--order history-->
-        <div class="p-3">
-            <?php
-            //fetch all orders by this user
-            $sql = "SELECT * FROM orders WHERE userid={$_SESSION['user']['id']}  AND orderconfirmed=1 ORDER BY timestamp DESC";
-            $result = mysqli_query($conn, $sql);
-            $orders = mysqli_fetch_all($result, MYSQLI_ASSOC);
-            foreach ($orders as $order) {
-                ShowOrder($order);
-            }
-            ?>
+        <div class="container px-4 mt-4">
+            <!--order history-->
+            <div class="p-3">
+                <?php
+                //fetch all orders by this user
+                $sql = "SELECT * FROM orders WHERE userid={$_SESSION['user']['id']}  AND orderconfirmed=1 ORDER BY timestamp DESC";
+                $result = mysqli_query($conn, $sql);
+                $orders = mysqli_fetch_all($result, MYSQLI_ASSOC);
+                foreach ($orders as $order) {
+                    ShowOrder($order);
+                }
+                ?>
+            </div>
         </div>
-    </div>
     <?php
 }
 ?>
